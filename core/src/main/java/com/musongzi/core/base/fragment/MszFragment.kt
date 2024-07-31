@@ -42,7 +42,7 @@ abstract class MszFragment<V : IHolderViewModel<*>, D : ViewDataBinding> :
         }else {
             Log.i(TAG, "onCreateView: cache had viewModel = ${getViewModel()}")
         }
-        handlerArguments()
+//        handlerArguments()
         return v;
     }
 
@@ -99,10 +99,10 @@ abstract class MszFragment<V : IHolderViewModel<*>, D : ViewDataBinding> :
     }
 
 
-    override fun handlerOnViewCreateSaveInstanceState(savedInstanceState: Bundle?) {
-        super.handlerOnViewCreateSaveInstanceState(savedInstanceState)
-        getViewModel().handlerSavedInstanceState(savedInstanceState)
-    }
+//    override fun handlerOnViewCreateSaveInstanceState(savedInstanceState: Bundle?) {
+//        super.handlerOnViewCreateSaveInstanceState(savedInstanceState)
+//        getViewModel().handlerSavedInstanceState(savedInstanceState)
+//    }
 
 
     companion object {

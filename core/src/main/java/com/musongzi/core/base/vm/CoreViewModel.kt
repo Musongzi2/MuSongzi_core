@@ -54,10 +54,10 @@ abstract class CoreViewModel : ViewModel(), IAttach<IContextClient>, IWant, IDis
 
     override fun onCleared() {
         holderActivity = null;
-        onClearOperate(this)
+//        onClearOperate(this)
     }
 
-    override fun onClearOperate(any: Any?) = true
+//    override fun onClearOperate(any: Any?) = true
 
     @Deprecated("")
     override fun attachNow(t: IContextClient?) {

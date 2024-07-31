@@ -3,7 +3,8 @@ package com.musongzi.music.impl
 import android.os.Looper
 import androidx.lifecycle.MutableLiveData
 import com.musongzi.comment.util.SourceImpl
-import com.musongzi.core.base.page.PageSupport
+import com.musongzi.core.base.page2.PageCallBack
+import com.musongzi.core.base.page2.PageLoader
 import com.musongzi.core.itf.IAttribute
 import com.musongzi.core.itf.page.IPageEngine
 import com.musongzi.core.itf.page.IRead2
@@ -38,7 +39,7 @@ class MusicArrayImpl<I : IMediaPlayInfo, D>(name: String, dataPacket: RemoteData
      * 音乐队列数据引擎
      */
     private val musicPageEngine: IPageEngine<I> by lazy {
-        PageSupport(callBack)
+        PageLoader.createInstance(callBack)
     }
 
     /**
@@ -58,7 +59,7 @@ class MusicArrayImpl<I : IMediaPlayInfo, D>(name: String, dataPacket: RemoteData
     /**
      * 数据引擎的注入回调
      */
-    private var callBack: PageSupport.CallBack<I, D>
+    private var callBack:PageCallBack<I, D>
 
     /**
      * 初始化了数据集合
@@ -140,6 +141,8 @@ class MusicArrayImpl<I : IMediaPlayInfo, D>(name: String, dataPacket: RemoteData
             playIndexLiveData.value = index + 1
         }
     }
+
+    override fun isEnd(): Boolean = musicPageEngine.isEnd()
 
     companion object {
         fun mixIndexState(index: Int, state: Int): Int {

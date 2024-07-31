@@ -8,8 +8,6 @@ import com.musongzi.comment.ExtensionMethod.getSaveStateValue
 import com.musongzi.comment.ExtensionMethod.saveStateChange
 import com.musongzi.core.base.business.EmptyBusiness
 import com.musongzi.core.base.vm.DataDriveViewModel
-import com.musongzi.core.itf.IClient
-import com.musongzi.core.itf.ILifeSaveStateHandle
 import com.musongzi.core.itf.ISaveStateHandle
 import com.musongzi.core.itf.holder.IHolderActivity
 import com.musongzi.core.itf.holder.IHolderArguments
@@ -30,15 +28,15 @@ class HolderActivityProxy(activity: IHolderActivity) : IHolderActivity {
 
 
     override fun getHolderActivity(): FragmentActivity? {
-        return "getHolderActivity".getValue(activityReference?.get()?.getInstanceModel()?.localSavedStateHandle())
+        return "getHolderActivity".getValue(activityReference?.get()?.getInstanceModel()?.localSavedStateHandle)
     }
 
-    override fun getClient(): IClient? {
-        return "getClient".getValue(activityReference?.get()?.getInstanceModel()?.localSavedStateHandle())
-    }
+//    override fun getClient(): IClient? {
+//        return "getClient".getValue(activityReference?.get()?.getInstanceModel()?.localSavedStateHandle)
+//    }
 
     override fun getHolderContext(): Context? {
-        return "getHolderContext".getValue(activityReference?.get()?.getInstanceModel()?.localSavedStateHandle())
+        return "getHolderContext".getValue(activityReference?.get()?.getInstanceModel()?.localSavedStateHandle)
     }
 
     override fun putArguments(d: Bundle?) {
@@ -46,57 +44,57 @@ class HolderActivityProxy(activity: IHolderActivity) : IHolderActivity {
     }
 
     override fun getArguments(): Bundle? {
-        return "getArguments".getValue(activityReference?.get()?.getInstanceModel()?.localSavedStateHandle())
+        return "getArguments".getValue(activityReference?.get()?.getInstanceModel()?.localSavedStateHandle)
     }
 
-    override fun handlerArguments() {
-
-    }
+//    override fun handlerArguments() {
+//
+//    }
 
     override fun notifyDataSetChanged() {
-        val index = "notifyDataSetChanged".getValue<Int>(activityReference?.get()?.getInstanceModel()?.localSavedStateHandle())
+        val index = "notifyDataSetChanged".getValue<Int>(activityReference?.get()?.getInstanceModel()?.localSavedStateHandle)
         index?.let {
-            "notifyDataSetChanged".setValue(activityReference?.get()?.getInstanceModel()?.localSavedStateHandle(), it + 1)
+            "notifyDataSetChanged".setValue(activityReference?.get()?.getInstanceModel()?.localSavedStateHandle, it + 1)
         }
     }
 
     override fun notifyDataSetChangedItem(postiont: Int) {
-        "notifyDataSetChangedItem".setValue(activityReference?.get()?.getInstanceModel()?.localSavedStateHandle(), postiont)
+        "notifyDataSetChangedItem".setValue(activityReference?.get()?.getInstanceModel()?.localSavedStateHandle, postiont)
     }
 
     override fun showDialog(msg: String?) {
-        "showDialog".setValue(activityReference?.get()?.getInstanceModel()?.localSavedStateHandle(), msg)
+        "showDialog".setValue(activityReference?.get()?.getInstanceModel()?.localSavedStateHandle, msg)
     }
 
     override fun disimissDialog() {
-        val index = "disimissDialog".getValue<Int>(activityReference?.get()?.getInstanceModel()?.localSavedStateHandle())
+        val index = "disimissDialog".getValue<Int>(activityReference?.get()?.getInstanceModel()?.localSavedStateHandle)
         index?.let {
-            "disimissDialog".setValue(activityReference?.get()?.getInstanceModel()?.localSavedStateHandle(), it + 1)
+            "disimissDialog".setValue(activityReference?.get()?.getInstanceModel()?.localSavedStateHandle, it + 1)
         }
     }
 
     override fun topViewModelProvider(): ViewModelProvider? {
-        return "topViewModelProvider".getValue(activityReference?.get()?.getInstanceModel()?.localSavedStateHandle())
+        return "topViewModelProvider".getValue(activityReference?.get()?.getInstanceModel()?.localSavedStateHandle)
     }
 
     override fun thisViewModelProvider(): ViewModelProvider? {
-        return "thisViewModelProvider".getValue(activityReference?.get()?.getInstanceModel()?.localSavedStateHandle())
+        return "thisViewModelProvider".getValue(activityReference?.get()?.getInstanceModel()?.localSavedStateHandle)
     }
 
     override fun <T> bindToLifecycle(): LifecycleTransformer<T>? {
-        return "bindToLifecycle".getValue(activityReference?.get()?.getInstanceModel()?.localSavedStateHandle())
+        return "bindToLifecycle".getValue(activityReference?.get()?.getInstanceModel()?.localSavedStateHandle)
     }
 
     override fun getMainLifecycle(): IHolderLifecycle? {
-        return "getMainLifecycle".getValue(activityReference?.get()?.getInstanceModel()?.localSavedStateHandle())
+        return "getMainLifecycle".getValue(activityReference?.get()?.getInstanceModel()?.localSavedStateHandle)
     }
 
     override fun getThisLifecycle(): LifecycleOwner? {
-        return "getThisLifecycle".getValue(activityReference?.get()?.getInstanceModel()?.localSavedStateHandle())
+        return "getThisLifecycle".getValue(activityReference?.get()?.getInstanceModel()?.localSavedStateHandle)
     }
 
     override fun runOnUiThread(runnable: Runnable) {
-        "notifyDataSetChangedItem".setValue(activityReference?.get()?.getInstanceModel()?.localSavedStateHandle(), runnable)
+        "notifyDataSetChangedItem".setValue(activityReference?.get()?.getInstanceModel()?.localSavedStateHandle, runnable)
     }
 
 

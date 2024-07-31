@@ -44,7 +44,7 @@ abstract class BaseLayoutFragment: RxFragment() , IHolderActivity,FragmentContro
         }).show()
     }
 
-    final override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         fControl = FragmentBusinessControlClientImpl(this)
         return createView(inflater,container,savedInstanceState)
     }
@@ -53,9 +53,9 @@ abstract class BaseLayoutFragment: RxFragment() , IHolderActivity,FragmentContro
         return getLayoutId().layoutInflater(inflater,container)
     }
 
-    override fun onClearOperate(any: Any?): Boolean {
-        return true
-    }
+//    override fun onClearOperate(any: Any?): Boolean {
+//        return true
+//    }
 
     protected abstract fun getLayoutId(): Int
 

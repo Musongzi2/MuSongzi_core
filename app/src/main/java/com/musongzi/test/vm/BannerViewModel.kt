@@ -13,12 +13,12 @@ import com.luck.picture.lib.entity.LocalMedia
 import com.luck.picture.lib.interfaces.OnResultCallbackListener
 import com.luck.picture.lib.utils.ToastUtils
 import com.musongzi.GlideEngine
-import com.musongzi.comment.viewmodel.ApiViewModel
 import com.musongzi.core.ExtensionCoreMethod.sub
 import com.musongzi.core.ExtensionCoreMethod.toJson
 import com.musongzi.core.base.business.EmptyBusiness
 import com.musongzi.core.base.manager.ActivityLifeManager
 import com.musongzi.core.base.manager.RetrofitManager
+import com.musongzi.core.base.vm.DataDriveViewModel
 import com.musongzi.test.IBannerAndRetrofitClient
 import com.musongzi.test.MszTestApi
 import com.musongzi.test.bean.LoginBean
@@ -29,7 +29,7 @@ import java.io.File
 import java.util.ArrayList
 
 
-class BannerViewModel : ApiViewModel<IBannerAndRetrofitClient, EmptyBusiness, MszTestApi>() {
+class BannerViewModel : DataDriveViewModel<EmptyBusiness>() {
 
 
     var textContextField = ObservableField<String>()

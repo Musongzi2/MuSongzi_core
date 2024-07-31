@@ -54,9 +54,7 @@ class RecyleViewCheckFragment : DataBindingFragment<FragmentRecycleCheckBinding>
 
     }
 
-    override fun initEvent() {
 
-    }
 
     override fun initData() {
 

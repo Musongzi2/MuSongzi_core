@@ -20,7 +20,8 @@ import com.musongzi.music.bean.MusicPlayInfoImpl
  * 一个队列管理其中包含了数据的加载和分页[IPageEngine]的是此队列的remote的数据加载器
  *
  * */
-interface IMusicArray<I : IAttribute> : IAttributeArray<I>, IHolderPlayController, IHolderRead<IRead2>{
+interface IMusicArray<I : IAttribute> : IAttributeArray<I>, IHolderPlayController,
+    IHolderRead<IRead2> {
 
     /**
      * 当前的播放的基于当前音乐集合的下标
@@ -44,12 +45,14 @@ interface IMusicArray<I : IAttribute> : IAttributeArray<I>, IHolderPlayControlle
     override fun enableRefreshLimit(enable: Boolean) {
         (getHolderPageEngine() as? ILimitOnLoaderState)?.enableRefreshLimit(enable)
     }
+
     /**
      * 省略
      */
     override fun enableMoreLoadLimit(enable: Boolean) {
         (getHolderPageEngine() as? ILimitOnLoaderState)?.enableMoreLoadLimit(enable)
     }
+
     /**
      * 获取当前的音乐队列/专辑的远端数据引擎
      */
@@ -58,7 +61,6 @@ interface IMusicArray<I : IAttribute> : IAttributeArray<I>, IHolderPlayControlle
     companion object {
         const val INDEX_NORMAL = 1.shl(28)
         const val INDEX_MASK = INDEX_NORMAL
-
 
 
     }

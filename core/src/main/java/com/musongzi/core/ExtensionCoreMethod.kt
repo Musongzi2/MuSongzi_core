@@ -173,7 +173,7 @@ object ExtensionCoreMethod {
     }
 
     @JvmStatic
-    fun Int.layoutInflater(layoutInflater: LayoutInflater, p: ViewGroup?, isAttach: Boolean = false): View =
+    fun Int.layoutInflater(layoutInflater: LayoutInflater, p: ViewGroup? = null, isAttach: Boolean = false): View =
         layoutInflater.inflate(this, p, isAttach);
 
 

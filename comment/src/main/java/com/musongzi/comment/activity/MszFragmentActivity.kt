@@ -49,7 +49,7 @@ open class MszFragmentActivity : AppCompatActivity(), IHolderContext,
 
     protected fun setChildMainView(layoutResID: Int) {
         (business.getHolderDataBinding().root as ViewGroup).apply {
-            addView(layoutResID.layoutInflater(this))
+            addView(layoutResID.layoutInflater(layoutInflater))
         }
     }
 

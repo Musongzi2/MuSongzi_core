@@ -6,11 +6,9 @@ import com.musongzi.core.itf.holder.IHolderActivity
 @Deprecated("已过期")
 interface IHolderPageEngine<I> : ILimitOnLoaderState {
 
-    val source: ISource<I>?
-
     fun getHolderPageEngine(): IPageEngine<I>?
 
-    fun initAll(client: IRecycleViewClient<I>, coLifeCycle: IHolderActivity, isRefresh: Boolean = false, injection:((target:String)->Any)?)
+//    fun initAll(client: IRecycleViewClient<I>, coLifeCycle: IHolderActivity, isRefresh: Boolean = false, injection:((target:String)->Any)?)
 
 
     override fun enableRefreshLimit(enable: Boolean) {

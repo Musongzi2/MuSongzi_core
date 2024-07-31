@@ -37,9 +37,6 @@ class TowFragment : MszFragment<SimpleViewModel, ActivityTowBinding>() {
 //        },2000)
     }
 
-    override fun initEvent() {
-
-    }
 
     override fun initData() {
 

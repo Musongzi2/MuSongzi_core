@@ -42,12 +42,9 @@ class Camra2Fragment: MszFragment<BannerViewModel, FragmentCamera2Binding>() {
 //        })
     }
 
-    override fun initEvent() {
-//        TODO("Not yet implemented")
-    }
+
 
     override fun initData() {
-//        TODO("Not yet implemented")
     }
 
     /**

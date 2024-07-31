@@ -160,10 +160,6 @@ class SupproActivityBusiness : BaseMapBusiness<IHolderLifecycle>(), ISupprotActi
         override fun getHolderActivity(): FragmentActivity? =
             activity.getHolderContext() as? FragmentActivity
 
-        override fun getClient(): IClient {
-            return (activity as? IClient) ?: this
-        }
-
         override fun getHolderContext(): Context? {
             return activity.getHolderContext()
         }
@@ -175,9 +171,9 @@ class SupproActivityBusiness : BaseMapBusiness<IHolderLifecycle>(), ISupprotActi
         override fun getArguments(): Bundle? =
             (activity.getHolderContext() as? Activity)?.intent?.extras
 
-        override fun handlerArguments() {
-            (activity as? IHolderArguments<Bundle>)?.handlerArguments()
-        }
+//        override fun handlerArguments() {
+//            (activity as? IHolderArguments<Bundle>)?.handlerArguments()
+//        }
 
         override fun notifyDataSetChanged() {
             (activity as? INotifyDataSetChanged)?.notifyDataSetChanged()
