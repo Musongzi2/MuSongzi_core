@@ -1,9 +1,13 @@
 package com.musongzi.test.bean.respone;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
+
 public class BaseResponse {
 
     private String _url;
 
+    @Expose(serialize = false, deserialize = false)
     private Object[] requestParamter;
 
     public String getUrl() {

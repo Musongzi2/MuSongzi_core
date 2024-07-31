@@ -1,5 +1,6 @@
 package com.musongzi.core.base.page2
 
+import android.util.Log
 import androidx.lifecycle.LifecycleOwner
 import com.musongzi.core.itf.page.IRead.Companion.SIMPLE_MODE
 import com.musongzi.core.itf.page.IAdMessage
@@ -14,6 +15,9 @@ abstract class SimplePageCall<I>(var lifecycleOwner: LifecycleOwner?) : PageCall
     var startPage = 0
     var bMode = SIMPLE_MODE
 
+    companion object{
+        private const val TAG = "SimplePageCall"
+    }
 
     override val thisLifecycle: LifecycleOwner?
         get() = lifecycleOwner
@@ -24,12 +28,12 @@ abstract class SimplePageCall<I>(var lifecycleOwner: LifecycleOwner?) : PageCall
 
     override fun getAdMessage(): IAdMessage<I>? = null
 
-    override fun handlerState(integer: Int?) {
-
+    override fun handlerState(state: Int?) {
+        Log.i(TAG, "handlerState: state = $state")
     }
 
     override fun handlerDataChange(data: MutableList<I>, request: RequestObservableBean<List<I>>) {
-
+        Log.i(TAG, "handlerDataChange: ")
     }
 
     override fun getBusinessMode(): Int = bMode
@@ -40,9 +44,10 @@ abstract class SimplePageCall<I>(var lifecycleOwner: LifecycleOwner?) : PageCall
     override fun pageSize(): Int = pageSize
 
     override fun convertListByNewData(data: MutableList<I>, transList: MutableList<I>) {
-
+        Log.i(TAG, "convertListByNewData: ")
     }
 
+    @Deprecated("废弃", ReplaceWith("null"))
     override fun createPostEvent(request: RequestObservableBean<List<I>>): Any? = null
 
 }
