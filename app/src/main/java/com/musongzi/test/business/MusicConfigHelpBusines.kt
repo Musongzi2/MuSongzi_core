@@ -1,8 +1,7 @@
 package com.musongzi.test.business
 
 import android.util.Log
-import com.musongzi.comment.ExtensionMethod.saveStateChange
-import com.musongzi.comment.ExtensionMethod.savedStateAllLiveChangeValue
+import com.musongzi.core.ExtensionCoreMethod.saveStateChange
 import com.musongzi.core.base.business.BaseMapBusiness
 import com.musongzi.core.itf.IAttribute
 import com.musongzi.core.itf.IViewInstance

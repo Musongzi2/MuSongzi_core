@@ -106,7 +106,11 @@ class SplashActivity : BaseActivity() {
 
 //        TestImplFragment::class.java.startActivityNormal("滑动测试")
 
-        RecyclePageFragment::class.java.startActivityNormal("数据测试")
+        RecyclePageFragment::class.java.startActivityNormal(
+            "数据测试",
+            dataBundleMethod = { bundle ->
+                bundle.putString("hahakey", "你好第二个页面")
+            })
 
 //        BannerAndRetrofitMainFragment::class.java.startActivityNormal("Banner请求")
 

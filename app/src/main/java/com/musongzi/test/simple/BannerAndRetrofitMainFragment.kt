@@ -3,11 +3,7 @@ package com.musongzi.test.simple
 import android.graphics.Bitmap
 import android.util.Log
 import androidx.databinding.Observable
-import androidx.databinding.ObservableField
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.lifecycleScope
-import com.musongzi.comment.ExtensionMethod.liveSaveStateObserver
+import com.musongzi.core.ExtensionCoreMethod.liveSaveStateObserver
 import com.musongzi.core.base.fragment.MszFragment
 import com.musongzi.test.IBannerAndRetrofitClient
 import com.musongzi.test.databinding.FragmentBannerCheckBinding

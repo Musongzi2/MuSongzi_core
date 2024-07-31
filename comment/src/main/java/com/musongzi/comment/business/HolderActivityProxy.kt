@@ -4,8 +4,8 @@ import android.content.Context
 import android.os.Bundle
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.*
-import com.musongzi.comment.ExtensionMethod.getSaveStateValue
-import com.musongzi.comment.ExtensionMethod.saveStateChange
+import com.musongzi.core.ExtensionCoreMethod.getSaveStateValue
+import com.musongzi.core.ExtensionCoreMethod.saveStateChange
 import com.musongzi.core.base.business.EmptyBusiness
 import com.musongzi.core.base.vm.DataDriveViewModel
 import com.musongzi.core.itf.ISaveStateHandle

@@ -3,12 +3,21 @@
     xmlns:tools="http://schemas.android.com/tools">
 
 
-    <FrameLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".fragment.RecyclePageFragment">
+        android:orientation="vertical">
 
         <!-- TODO: Update blank fragment layout -->
+
+        <TextView
+            android:id="@+id/id_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="10dp"
+            android:text="哈哈哈哈哈"
+            android:textSize="15dp" />
 
         <com.musongzi.comment.view.CompactSmartRefreshLayout
             android:id="@+id/id_SmartRefreshLayout"
@@ -22,5 +31,5 @@
         </com.musongzi.comment.view.CompactSmartRefreshLayout>
 
 
-    </FrameLayout>
+    </LinearLayout>
 </layout>

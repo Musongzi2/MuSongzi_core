@@ -90,16 +90,6 @@ object ExtensionMethod {
         }
     }
 
-
-    /**
-     * 通过fragment直接打开一个activity
-     * @param title 标题
-     * @param activity 框架内的一个[MszFragmentActivity]activity。继承于此的任何子类都可以
-     * @param barColor 状态栏颜色
-     * @param dataBundle 传递的数据
-     * @param businessClassName 如果fragment继承于 [MszFragment] 此注入可以控制当前 viewmodel 的业务的business初始化类型
-     *                          请注意，一定要是相关的继承关系
-     */
     @JvmStatic
     @JvmOverloads
     fun <F : Fragment> Class<F>.startActivityNormal(
@@ -107,13 +97,17 @@ object ExtensionMethod {
         //其实必须是NormalFragmentActivity 子类
         activity: Class<*>? = MszFragmentActivity::class.java,
         barColor: Int = R.color.bg_white,
-        dataBundle: Bundle? = null,
+        dataBundleMethod: ((Bundle) -> Unit)? = null,
         businessClassName: String? = null
     ) {
+        val bundle = Bundle()
+        if(dataBundleMethod != null){
+            dataBundleMethod(bundle)
+        }
         startActivityNormal(
             activity,
             StyleMessageDescribe(title, barColor),
-            dataBundle,
+            bundle,
             businessClassName
         )
     }
@@ -173,109 +167,110 @@ object ExtensionMethod {
         }
     }
 
-    /**
-     * 保存基于“key”的value 存储于bundle基于SavedStateHandler api
-     */
-    @JvmStatic
-    fun <T> String.saveStateChange(holder: IHolderSavedStateHandle, v: T) {
-        holder.getHolderSavedStateHandle()[this] = v
-    }
-
-    /**
-     * 保存基于“key”的value 存储于bundle基于SavedStateHandler api
-     */
-    @JvmStatic
-    fun <T> String.saveStateChange(saveStateHandle: ISaveStateHandle, v: T) {
-        saveStateHandle[this] = v
-    }
-
-
-    @JvmStatic
-    fun <T> String.liveSaveStateObserver(
-        lifecycle: LifecycleOwner?, saveStateHandle: IHolderSavedStateHandler?, observer: Observer<T?>
-    ) {
-        liveSaveStateObserver(lifecycle, saveStateHandle?.getHolderSavedStateHandle(), observer)
-    }
-
-    @JvmStatic
-    fun <T> String.liveSaveStateObserver(
-        lifecycle: LifecycleOwner?, saveStateHandle: ISaveStateHandle?, observer: Observer<T?>
-    ) {
-        if (lifecycle != null) {
-            saveStateHandle?.getLiveData<T>(this)?.observe(lifecycle, observer)
-        } else {
-            saveStateHandle?.getLiveData<T>(this)?.observeForever(observer)
-        }
-    }
+//    /**
+//     * 保存基于“key”的value 存储于bundle基于SavedStateHandler api
+//     */
+//    @JvmStatic
+//    fun <T> String.saveStateChange(holder: IHolderSavedStateHandle, v: T) {
+//        holder.getHolderSavedStateHandle()[this] = v
+//    }
+//
+//    /**
+//     * 保存基于“key”的value 存储于bundle基于SavedStateHandler api
+//     */
+//    @JvmStatic
+//    fun <T> String.saveStateChange(saveStateHandle: ISaveStateHandle, v: T) {
+//        saveStateHandle[this] = v
+//    }
 
 
-
-    @JvmStatic
-    @JvmOverloads
-    fun <T> String.liveSaveStateObserverOnOwner(
-        holder: ISaveStateHandle,
-        myLifecycleOwner: LifecycleOwner?,
-        observer: Observer<T?>,
-        otherLifecycleOwner: LifecycleOwner,
-        isRemove: Boolean = false,
-    ) {
-        if (myLifecycleOwner != null) {
-            val liveData = holder.getLiveData<T>(this);
-            if (isRemove) {
-                liveData.observe(otherLifecycleOwner, object : Observer<T?> {
-                    override fun onChanged(t: T?) {
-                        observer.onChanged(t)
-                        liveData.removeObserver(this)
-                    }
-                })
-            } else {
-                liveData.observe(otherLifecycleOwner, observer)
-            }
-        }
-    }
+//    @JvmStatic
+//    fun <T> String.liveSaveStateObserver(
+//        lifecycle: LifecycleOwner?,
+//        saveStateHandle: IHolderSavedStateHandler?,
+//        observer: Observer<T?>
+//    ) {
+//        liveSaveStateObserver(lifecycle, saveStateHandle?.getHolderSavedStateHandle(), observer)
+//    }
+//
+//    @JvmStatic
+//    fun <T> String.liveSaveStateObserver(
+//        lifecycle: LifecycleOwner?, saveStateHandle: ISaveStateHandle?, observer: Observer<T?>
+//    ) {
+//        if (lifecycle != null) {
+//            saveStateHandle?.getLiveData<T>(this)?.observe(lifecycle, observer)
+//        } else {
+//            saveStateHandle?.getLiveData<T>(this)?.observeForever(observer)
+//        }
+//    }
 
 
-    /**
-     * 获取基于“key”的可观察的livedata
-     */
-    @JvmStatic
-    fun <T> String.getSaveStateLiveData(holder: IHolderSavedStateHandle): LiveData<T?> {
-        return holder.getHolderSavedStateHandle().getLiveData(this);
-    }
+//    @JvmStatic
+//    @JvmOverloads
+//    fun <T> String.liveSaveStateObserverOnOwner(
+//        holder: ISaveStateHandle,
+//        myLifecycleOwner: LifecycleOwner?,
+//        observer: Observer<T?>,
+//        otherLifecycleOwner: LifecycleOwner,
+//        isRemove: Boolean = false,
+//    ) {
+//        if (myLifecycleOwner != null) {
+//            val liveData = holder.getLiveData<T>(this);
+//            if (isRemove) {
+//                liveData.observe(otherLifecycleOwner, object : Observer<T?> {
+//                    override fun onChanged(t: T?) {
+//                        observer.onChanged(t)
+//                        liveData.removeObserver(this)
+//                    }
+//                })
+//            } else {
+//                liveData.observe(otherLifecycleOwner, observer)
+//            }
+//        }
+//    }
 
-    @JvmStatic
-    fun <T> String.getSaveStateLiveData(saveStateHandle: ISaveStateHandle): LiveData<T?> {
-        return saveStateHandle.getLiveData(this);
-    }
 
-    /**
-     * 获取基于“key”的可观察的value
-     */
-    @JvmStatic
-    fun <T> String.getSaveStateValue(holder: IHolderSavedStateHandle): T? {
-        return holder.getHolderSavedStateHandle()[this]
-    }
+//    /**
+//     * 获取基于“key”的可观察的livedata
+//     */
+//    @JvmStatic
+//    fun <T> String.getSaveStateLiveData(holder: IHolderSavedStateHandle): LiveData<T?> {
+//        return holder.getHolderSavedStateHandle().getLiveData(this);
+//    }
+//
+//    @JvmStatic
+//    fun <T> String.getSaveStateLiveData(saveStateHandle: ISaveStateHandle): LiveData<T?> {
+//        return saveStateHandle.getLiveData(this);
+//    }
 
-    @JvmStatic
-    fun <T> String.getSaveStateValue(saveStateHandle: ISaveStateHandle): T? {
-        return saveStateHandle[this]
-    }
+//    /**
+//     * 获取基于“key”的可观察的value
+//     */
+//    @JvmStatic
+//    fun <T> String.getSaveStateValue(holder: IHolderSavedStateHandle): T? {
+//        return holder.getHolderSavedStateHandle()[this]
+//    }
+//
+//    @JvmStatic
+//    fun <T> String.getSaveStateValue(saveStateHandle: ISaveStateHandle): T? {
+//        return saveStateHandle[this]
+//    }
 
-    @JvmStatic
-    fun <T> String.savedStateAllLiveChangeValue(values: T) {
-        val r: (IHolderSavedStateHandle?, Activity) -> Unit = { f, activity ->
-            if (!activity.isFinishing) {
-                f?.getHolderSavedStateHandle()?.set(this, values)
-            }
-        }
-        for (activity in ActivityLifeManager.getInstance().getLifeActivityList()) {
-            if (activity is FragmentActivity) {
-                for (f in activity.supportFragmentManager.fragments) {
-                    r.invoke(f as? IHolderSavedStateHandle, activity)
-                }
-            }
-        }
-    }
+//    @JvmStatic
+//    fun <T> String.savedStateAllLiveChangeValue(values: T) {
+//        val r: (IHolderSavedStateHandle?, Activity) -> Unit = { f, activity ->
+//            if (!activity.isFinishing) {
+//                f?.getHolderSavedStateHandle()?.set(this, values)
+//            }
+//        }
+//        for (activity in ActivityLifeManager.getInstance().getLifeActivityList()) {
+//            if (activity is FragmentActivity) {
+//                for (f in activity.supportFragmentManager.fragments) {
+//                    r.invoke(f as? IHolderSavedStateHandle, activity)
+//                }
+//            }
+//        }
+//    }
 
     fun <N : IBusiness> Class<N>.getNextBusiness(next: INeed): N? {
         return next.getNext(this)

@@ -8,7 +8,9 @@ import com.musongzi.core.itf.IHolderUri
 import com.musongzi.music.itf.IMediaPlayInfo
 
 /*** created by linhui * on 2022/7/28 */
-open class MediaPlayInfo() : IMediaPlayInfo {
+open class MediaPlayInfo(var musicName: String? = null,uri: String? = null) : IMediaPlayInfo {
+
+
 
     private var valueFlag = 0;
     private var stringUrl: String? = ""
@@ -19,7 +21,9 @@ open class MediaPlayInfo() : IMediaPlayInfo {
             }
             field = value
         }
-    var musicName: String? = null
+    init {
+        stringUrl = uri
+    }
     private var mediaId: String = ""
 
     private var androidRes = 0
@@ -27,10 +31,6 @@ open class MediaPlayInfo() : IMediaPlayInfo {
             valueFlag = 1
             field = value
         }
-
-    constructor(uri: String) : this() {
-        this.stringUrl = uri
-    }
 
     override fun setUri(uri: Uri) {
         stringUrl = uri.toString()
@@ -71,6 +71,15 @@ open class MediaPlayInfo() : IMediaPlayInfo {
                 super.equals(other)
             }
         } ?: false
+    }
+
+    override fun hashCode(): Int {
+        var result = valueFlag
+        result = 31 * result + (stringUrl?.hashCode() ?: 0)
+        result = 31 * result + (musicName?.hashCode() ?: 0)
+        result = 31 * result + mediaId.hashCode()
+        result = 31 * result + androidRes
+        return result
     }
 
 }
