@@ -24,7 +24,6 @@ import com.musongzi.core.base.manager.RetrofitManager;
 import com.musongzi.core.base.map.SaveStateHandleWarp;
 import com.musongzi.core.base.vm.ClientViewModel;
 import com.musongzi.core.itf.IAgentHolder;
-import com.musongzi.core.itf.IAgentWrap;
 import com.musongzi.core.itf.IAttach;
 import com.musongzi.core.itf.IBusiness;
 import com.musongzi.core.itf.IClient;
@@ -239,9 +238,9 @@ public class InjectionHelp {
             } else {
                 instance = constructor.newInstance(businessWrapInstance);
             }
-            if (instance instanceof IAgentWrap) {
+            if (instance instanceof IAgentHolder) {
                 try {
-                    ((IAgentWrap) instance).setAgentModel(agent);
+                    ((IAgentHolder) instance).setAgentModel(agent);
                 } catch (Exception ex) {
                     Log.i(TAG, "injectBusiness: setAgent error in instance");
                     ex.printStackTrace();

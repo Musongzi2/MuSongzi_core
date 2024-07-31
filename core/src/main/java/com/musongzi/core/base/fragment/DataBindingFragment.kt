@@ -66,6 +66,7 @@ abstract class DataBindingFragment<D : ViewDataBinding> : BaseLayoutFragment(),
         return null
     }
 
+
     protected open fun superDatabindingName(): String = DataBindingFragment::class.java.name
 
     protected open fun actualTypeArgumentsDatabindinIndex(): Int = 0

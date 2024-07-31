@@ -13,9 +13,14 @@ import java.lang.ref.WeakReference
 /*** created by linhui * on 2022/9/15
  *
  * */
-abstract class DataDriveViewModel<B : IBusiness> : CoreViewModel, IHolderViewModel<B>,
+abstract class DataDriveViewModel<B : IBusiness> constructor(saved: SavedStateHandle? = null) : CoreViewModel(), IHolderViewModel<B>,
     IHolderNeed {
 
+    init {
+        if(saved != null){
+            setHolderSavedStateHandle(SaveStateHandleWarp(saved))
+        }
+    }
 
 //    fun <T> observerByKey(key:String,lifecycleOwner: LifecycleOwner,observer: Observer<T>){
 //        key.liveSaveStateObserver(lifecycleOwner,this,observer)
@@ -25,13 +30,13 @@ abstract class DataDriveViewModel<B : IBusiness> : CoreViewModel, IHolderViewMod
 //        key.liveSaveStateObserver(lifecycleOwner,localSavedStateHandle,observer)
 //    }
 
-    constructor():super(){
-        Log.i(TAG, "constructor by : ()")
-    }
-    constructor(saved: SavedStateHandle) : super() {
-        Log.i(TAG, "constructor by : (saved: SavedStateHandle)")
-        setHolderSavedStateHandle(SaveStateHandleWarp(saved))
-    }
+//    constructor():super(){
+//        Log.i(TAG, "constructor by : ()")
+//    }
+//    constructor(saved: SavedStateHandle?) : super() {
+//        Log.i(TAG, "constructor by : (saved: SavedStateHandle)")
+//        setHolderSavedStateHandle(SaveStateHandleWarp(saved))
+//    }
 
     private val businessInfo: BusinessInfo?
         get() {
@@ -41,7 +46,7 @@ abstract class DataDriveViewModel<B : IBusiness> : CoreViewModel, IHolderViewMod
         }
     private val business: B by lazy {
         val b = createBusiness()
-        (b as? IAgentWrap<IAgent>)?.setAgentModel(agentGet())
+        (b as? IAgentHolder<IAgent>)?.setAgentModel(agentGet())
         b.afterHandlerBusiness()
         b
     }

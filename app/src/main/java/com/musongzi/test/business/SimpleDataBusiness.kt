@@ -8,7 +8,7 @@ class SimpleDataBusiness : RemoteAsynLoadBusiness<Int>() {
 
 
     override fun loadData(): Int {
-        TimeUnit.SECONDS.sleep(5)
+//        TimeUnit.SECONDS.sleep(5)
         return 1
     }
 

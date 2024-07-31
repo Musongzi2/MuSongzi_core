@@ -4,8 +4,6 @@ import android.app.Activity
 import android.content.Context
 import android.os.Bundle
 import android.util.Log
-import androidx.annotation.CallSuper
-import androidx.annotation.CheckResult
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
@@ -28,11 +26,6 @@ import com.musongzi.core.util.InjectionHelp
 import com.trello.lifecycle4.android.lifecycle.AndroidLifecycle
 import com.trello.rxlifecycle4.LifecycleProvider
 import com.trello.rxlifecycle4.LifecycleTransformer
-import com.trello.rxlifecycle4.RxLifecycle
-import com.trello.rxlifecycle4.android.ActivityEvent
-import com.trello.rxlifecycle4.android.RxLifecycleAndroid
-import io.reactivex.rxjava3.core.Observable
-import io.reactivex.rxjava3.subjects.BehaviorSubject
 
 /*** created by linhui * on 2022/7/6
  *
@@ -40,7 +33,7 @@ import io.reactivex.rxjava3.subjects.BehaviorSubject
  *
  *
  * */
-class SupproActivityBusiness : BaseMapBusiness<IHolderLifecycle>(), ISupprotActivityBusiness {
+class SupproActivityBusiness : BaseMapBusiness<IViewInstance>(), ISupprotActivityBusiness{
 
     private val mLocalSavedHandler: ISaveStateHandle by lazy {
         LocalSavedHandler()
@@ -51,8 +44,10 @@ class SupproActivityBusiness : BaseMapBusiness<IHolderLifecycle>(), ISupprotActi
         val h = iAgent as HolderLifecycleImpl;
         h.activity.getHolderContext()?.let { context ->
             if (context is Activity) {
-                dataBinding = DataBindingUtil.setContentView(context, R.layout.activity_normal_fragment)
-                val activityDescribe: ActivityDescribe? = h.getArguments()?.getParcelable(ACTIVITY_DESCRIBE_INFO_KEY)
+                dataBinding =
+                    DataBindingUtil.setContentView(context, R.layout.activity_normal_fragment)
+                val activityDescribe: ActivityDescribe? =
+                    h.getArguments()?.getParcelable(ACTIVITY_DESCRIBE_INFO_KEY)
                 activityDescribe?.let { a ->
                     handlerWindowFlag(a)
                     (a.parcelable as? FragmentDescribe)?.let { fragmentDescribe ->
@@ -81,7 +76,7 @@ class SupproActivityBusiness : BaseMapBusiness<IHolderLifecycle>(), ISupprotActi
     }
 
     override fun getLocalHolderSavedStateHandle(): ISaveStateHandle {
-      return  mLocalSavedHandler
+        return mLocalSavedHandler
     }
 
     private fun handlerWindowFlag(a: ActivityDescribe) {
@@ -118,7 +113,7 @@ class SupproActivityBusiness : BaseMapBusiness<IHolderLifecycle>(), ISupprotActi
     }
 
     override fun topViewModelProvider(): ViewModelProvider? {
-       return (iAgent as? IHolderViewModelProvider)?.topViewModelProvider()
+        return (iAgent as? IHolderViewModelProvider)?.topViewModelProvider()
     }
 
     override fun thisViewModelProvider(): ViewModelProvider? {
@@ -129,10 +124,14 @@ class SupproActivityBusiness : BaseMapBusiness<IHolderLifecycle>(), ISupprotActi
         return dataBinding
     }
 
-    internal class HolderLifecycleImpl(private val savedInstance: Bundle?, var activity: IHolderContext) :
-        IHolderActivity, IHolderLifecycle ,IWant {
+    internal class HolderLifecycleImpl(
+        private val savedInstance: Bundle?,
+        var activity: IHolderContext
+    ) :
+        IHolderActivity, IHolderLifecycle, IWant {
 
-        private var androidLife: LifecycleProvider<Lifecycle.Event> = AndroidLifecycle.createLifecycleProvider(activity as LifecycleOwner)
+        private var androidLife: LifecycleProvider<Lifecycle.Event> =
+            AndroidLifecycle.createLifecycleProvider(activity as LifecycleOwner)
 
         private val activityViewModelProvider: ViewModelProvider by lazy {
             ViewModelProvider(
@@ -219,7 +218,10 @@ class SupproActivityBusiness : BaseMapBusiness<IHolderLifecycle>(), ISupprotActi
             modelClass: Class<T>,
             handle: SavedStateHandle
         ): T {
-            Log.i("SupportViewModelFactory", "create:   = ${modelClass.name} , activity = ${activity.getHolderActivity()}")
+            Log.i(
+                "SupportViewModelFactory",
+                "create:   = ${modelClass.name} , activity = ${activity.getHolderActivity()}"
+            )
             return InjectionHelp.injectViewModel(activity, defaultArgs, modelClass, handle) as T
         }
 
@@ -231,7 +233,7 @@ class SupproActivityBusiness : BaseMapBusiness<IHolderLifecycle>(), ISupprotActi
         const val BUNDLE_KEY = "support_bundle_key"
         const val ACTIVITY_DESCRIBE_INFO_KEY = "support_activity_key"
 
-        fun <B:ISupprotActivityBusiness> create(
+        fun <B : ISupprotActivityBusiness> create(
             bundle: Bundle?,
             activity: IHolderContext
         ): B? {
@@ -243,7 +245,8 @@ class SupproActivityBusiness : BaseMapBusiness<IHolderLifecycle>(), ISupprotActi
             val impl = HolderLifecycleImpl(bundle, activity)
 
             return impl.getArguments()?.let {
-                val activityDescribe = it.getParcelable<ActivityDescribe>(ACTIVITY_DESCRIBE_INFO_KEY);
+                val activityDescribe =
+                    it.getParcelable<ActivityDescribe>(ACTIVITY_DESCRIBE_INFO_KEY);
                 if (activityDescribe?.businessName != null) {
                     val clazz = checkBusinessClass.invoke(activityDescribe)
                     InjectionHelp.injectBusiness(clazz, impl).apply {

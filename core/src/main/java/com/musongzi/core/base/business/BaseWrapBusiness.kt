@@ -4,9 +4,11 @@ import com.musongzi.core.ExtensionCoreMethod.threadStart
 import com.musongzi.core.itf.IBusiness
 import com.musongzi.core.itf.IViewInstance
 import com.musongzi.core.itf.IWarpBusiness
+import java.io.Closeable
 
 /*** created by linhui * on 2022/9/23 */
-open class BaseWrapBusiness<V : IViewInstance> @JvmOverloads constructor(dependBusiness:IBusiness? = null) : IWarpBusiness<V> {
+open class BaseWrapBusiness<V : IViewInstance> @JvmOverloads constructor(dependBusiness:IBusiness? = null) : IWarpBusiness<V>,
+    Closeable {
 
     protected lateinit var iAgent: V
     private var dependBusiness: IBusiness? = null
@@ -27,6 +29,10 @@ open class BaseWrapBusiness<V : IViewInstance> @JvmOverloads constructor(dependB
 
     override fun setAgentModel(v: V) {
         this.iAgent = v
+    }
+
+    override fun close() {
+
     }
 
 

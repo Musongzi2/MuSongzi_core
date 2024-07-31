@@ -53,7 +53,7 @@ abstract class CoreViewModel : ViewModel(), IAttach<IContextClient>, IWant, IDis
 //    }
 
     override fun onCleared() {
-        holderActivity = null;
+        holderActivity = null
 //        onClearOperate(this)
     }
 

@@ -11,6 +11,7 @@ import com.mszsupport.test.TestImplFragment
 import com.musongzi.comment.ExtensionMethod.startActivityNormal
 import com.musongzi.test.R
 import com.musongzi.test.databinding.ActivityMainBinding
+import com.musongzi.test.fragment.RecyclePageFragment
 import kotlinx.coroutines.*
 
 class SplashActivity : BaseActivity() {
@@ -30,21 +31,21 @@ class SplashActivity : BaseActivity() {
         );
 
 
-        lifecycleScope.launch {
-            Log.i("Continuation", "onCreate: start")
-
-            val two = async {
-                two()
-            }.apply {
-                start()
-            }
-
-            val three = async {
-                three()
-            }.apply {
-                start()
-            }
-            Log.i("Continuation", "onCreate: ${two.await() + three.await()}")
+//        lifecycleScope.launch {
+//            Log.i("Continuation", "onCreate: start")
+//
+//            val two = async {
+//                two()
+//            }.apply {
+//                start()
+//            }
+//
+//            val three = async {
+//                three()
+//            }.apply {
+//                start()
+//            }
+//            Log.i("Continuation", "onCreate: ${two.await() + three.await()}")
 
 //            Log.i(
 //                "Continuation", "onCreate: sum = ${
@@ -70,7 +71,7 @@ class SplashActivity : BaseActivity() {
 //            Log.i("Continuation", "onCreate: 等待")
 //            Log.i("Continuation", "onCreate: waitResult = $waitResult")
 
-        }
+//        }
 
 
     }
@@ -103,7 +104,9 @@ class SplashActivity : BaseActivity() {
 //        MainActivity::class.java.startActivity()
 //        TowFragment::class.java.startActivityNormal("第二个页面")
 
-        TestImplFragment::class.java.startActivityNormal("滑动测试")
+//        TestImplFragment::class.java.startActivityNormal("滑动测试")
+
+        RecyclePageFragment::class.java.startActivityNormal("数据测试")
 
 //        BannerAndRetrofitMainFragment::class.java.startActivityNormal("Banner请求")
 

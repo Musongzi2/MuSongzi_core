@@ -31,7 +31,7 @@ import com.trello.rxlifecycle4.components.support.RxFragment
 /**
 create by linhui , data = 2023/7/1 0:03
  **/
-abstract class BaseLayoutFragment: RxFragment() , IHolderActivity,FragmentControlClient {
+abstract class BaseLayoutFragment : RxFragment(), IHolderActivity, FragmentControlClient {
     protected lateinit var fControl: FragmentControlClient
     protected val TAG = javaClass.name
     private var tipDialog: Dialog? = null
@@ -44,13 +44,21 @@ abstract class BaseLayoutFragment: RxFragment() , IHolderActivity,FragmentContro
         }).show()
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         fControl = FragmentBusinessControlClientImpl(this)
-        return createView(inflater,container,savedInstanceState)
+        return createView(inflater, container, savedInstanceState)
     }
 
-    protected open fun createView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return getLayoutId().layoutInflater(inflater,container)
+    protected open fun createView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        return getLayoutId().layoutInflater(inflater, container)
     }
 
 //    override fun onClearOperate(any: Any?): Boolean {
@@ -67,10 +75,10 @@ abstract class BaseLayoutFragment: RxFragment() , IHolderActivity,FragmentContro
     }
 
     override fun disconnect(): Boolean {
-        return if(lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED) && activity != null) {
+        return if (lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED) && activity != null) {
             requireActivity().finish()
             true
-        }else{
+        } else {
             false
         }
     }
@@ -116,8 +124,14 @@ abstract class BaseLayoutFragment: RxFragment() , IHolderActivity,FragmentContro
         return ViewModelProvider(this, defaultViewModelProviderFactory)
     }
 
+    private var factory: ViewModelProvider.Factory? = null
+
     protected fun newFactory(owner: SavedStateRegistryOwner): ViewModelProvider.Factory =
-        object : AbstractSavedStateViewModelFactory(owner, getFactoryDefaultArgs()) {
+        safeGetFactory(owner)
+
+    private fun safeGetFactory(owner: SavedStateRegistryOwner): ViewModelProvider.Factory {
+        return factory ?: object :
+            AbstractSavedStateViewModelFactory(owner, getFactoryDefaultArgs()) {
             override fun <T : ViewModel> create(
                 key: String,
                 modelClass: Class<T>,
@@ -130,7 +144,11 @@ abstract class BaseLayoutFragment: RxFragment() , IHolderActivity,FragmentContro
                     handle
                 )!!
             }
+        }.apply {
+            factory = this
         }
+    }
+
 
     override fun getDefaultViewModelProviderFactory(): ViewModelProvider.Factory {
         return newFactory(this)
@@ -138,8 +156,8 @@ abstract class BaseLayoutFragment: RxFragment() , IHolderActivity,FragmentContro
 
     protected open fun createDialog() = TipDialog(requireActivity())
 
-     override fun runOnUiThread(runnable: Runnable) {
-        if(lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) {
+    override fun runOnUiThread(runnable: Runnable) {
+        if (lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) {
             requireActivity().runOnUiThread(runnable)
         }
     }
@@ -191,7 +209,8 @@ abstract class BaseLayoutFragment: RxFragment() , IHolderActivity,FragmentContro
 
 
     abstract fun initView()
-//    abstract fun initEvent()
+
+    //    abstract fun initEvent()
     abstract fun initData()
 
     override fun onCreate(savedInstanceState: Bundle?) {

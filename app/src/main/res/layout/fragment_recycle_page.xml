@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".fragment.RecyclePageFragment">
+
+        <!-- TODO: Update blank fragment layout -->
+
+        <com.musongzi.comment.view.CompactSmartRefreshLayout
+            android:id="@+id/id_SmartRefreshLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/id_recyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+        </com.musongzi.comment.view.CompactSmartRefreshLayout>
+
+
+    </FrameLayout>
+</layout>

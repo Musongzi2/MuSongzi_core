@@ -6,10 +6,9 @@ import com.musongzi.core.itf.IBusiness
 import com.musongzi.core.itf.holder.IHolderApi
 
 ///*** created by linhui * on 2022/9/15 */
-open class ApiViewModel<B : IBusiness> : DataDriveViewModel<B> {
+open class ApiViewModel<B : IBusiness>(saved: SavedStateHandle? = null) : DataDriveViewModel<B>(saved) {
 
-    constructor() : super()
-    constructor(saved: SavedStateHandle) : super(saved)
+
 
 
 }

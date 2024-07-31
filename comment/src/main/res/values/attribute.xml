@@ -14,4 +14,11 @@
         <attr name="right_bottom_radius" format="dimension" />
         <attr name="left_bottom_radius" format="dimension" />
     </declare-styleable>
+
+
+    <declare-styleable name="refresh_layout">
+        <attr name="heart_view" format="string" />
+        <attr name="footer_view" format="string" />
+    </declare-styleable>
+
 </resources>
