@@ -4,5 +4,16 @@ interface IRead {
 
     fun refresh()
     fun next()
+    fun isEnd():Boolean
+
+    val businessMode:Int
+        get() = SIMPLE_MODE
+
+
+    companion object{
+        const val SIMPLE_MODE = 0x2
+        const val POSTION_MODE = 0x4
+    }
+
 
 }

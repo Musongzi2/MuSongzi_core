@@ -9,6 +9,8 @@ import android.view.ViewGroup
 import androidx.core.app.ActivityCompat
 import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
@@ -21,8 +23,11 @@ import com.musongzi.core.base.client.IRecycleViewClient
 import com.musongzi.core.base.manager.RetrofitManager
 import com.musongzi.core.base.vm.IHandlerChooseViewModel
 import com.musongzi.core.itf.IBusiness
+import com.musongzi.core.itf.IHolderSavedStateHandle
+import com.musongzi.core.itf.ISaveStateHandle
 import com.musongzi.core.itf.IWant
 import com.musongzi.core.itf.holder.IHolderNeed
+import com.musongzi.core.itf.holder.IHolderSavedStateHandler
 import com.musongzi.core.itf.holder.IHolderViewModelProvider
 import com.musongzi.core.itf.page.IPageEngine
 import com.musongzi.core.itf.page.ISource
@@ -31,6 +36,8 @@ import com.musongzi.core.util.TextUtil
 import com.scwang.smart.refresh.footer.ClassicsFooter
 import com.scwang.smart.refresh.header.MaterialHeader
 import com.scwang.smart.refresh.layout.SmartRefreshLayout
+import com.scwang.smart.refresh.layout.api.RefreshFooter
+import com.scwang.smart.refresh.layout.api.RefreshHeader
 import io.reactivex.rxjava3.core.CompletableOnSubscribe
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.disposables.Disposable
@@ -112,7 +119,7 @@ object ExtensionCoreMethod {
                 CACHE_BEAN_METHOD[key] = method
 //                Log.i(BEAN_TAG, ": succeed: find")
 //                Log.i(BEAN_TAG, ": succeed " + clazz.simpleName)
-            }else{
+            } else {
 //                Log.i(BEAN_TAG, ": succeed: cache")
             }
             method!!.invoke(this, entityObject)
@@ -131,10 +138,12 @@ object ExtensionCoreMethod {
         return@let it.getNext(HandlerChooseBusiness::class.java)
     } ?: HandlerChooseBusiness(this)
 
+    @JvmStatic
     fun <V : ViewModel> Class<V>.topInstance(b: IHolderViewModelProvider?): V? {
         return b?.topViewModelProvider()?.get(this)
     }
 
+    @JvmStatic
     fun <V : ViewModel> Class<V>.thisInstance(b: IHolderViewModelProvider?): V? {
         return b?.thisViewModelProvider()?.get(this)
     }
@@ -164,55 +173,93 @@ object ExtensionCoreMethod {
     }
 
     @JvmStatic
-    fun Int.layoutInflater(p: ViewGroup?): View =
-        LayoutInflater.from(ActivityThreadHelp.getCurrentApplication()).inflate(this, p, false);
+    fun Int.layoutInflater(layoutInflater: LayoutInflater, p: ViewGroup?, isAttach: Boolean = false): View =
+        layoutInflater.inflate(this, p, isAttach);
+
+
+//    @JvmStatic
+//    fun SmartRefreshLayout.refreshLayoutInit(
+//        p: IPageEngine<*>?, isEnableRefresh: Boolean, isEnableLoadMore: Boolean, time: Int = 500, mRefreshHeader: RefreshHeader? = null,
+//        mRefreshFooter: RefreshFooter? = null
+//    ) {
+//        refreshLayoutInit(this, p, isEnableRefresh, isEnableLoadMore, time, mRefreshHeader, mRefreshFooter)
+//    }
+
+
+    fun SmartRefreshLayout?.refreshLayoutInit(
+        refresh: (()->Unit)? = null,
+        loadMore: (()->Unit)? = null,
+        isEnableRefresh: Boolean = true,
+        isEnableLoadMore: Boolean = true,
+        time: Int = 500,
+        mRefreshHeader: RefreshHeader? = null,
+        mRefreshFooter: RefreshFooter? = null
+    ) {
+        if(this == null){
+            Log.i("refreshLayoutInit", "init : SmartRefreshLayout == null  || IPageEngine == null")
+            return
+        }
+
+        Log.i("refreshLayoutInit", ": $isEnableRefresh , $isEnableLoadMore")
+        if (isEnableRefresh) {
+            setOnRefreshListener {
+                finishRefresh(time)
+                refresh?.invoke()
+            }
+        }
+        if (isEnableLoadMore) {
+            setOnLoadMoreListener {
+                finishLoadMore(time)
+                loadMore?.invoke()
+            }
+        }
+        if (isEnableRefresh) {
+            setRefreshHeader(mRefreshHeader ?: MaterialHeader(context))
+        }
+        if (isEnableLoadMore) {
+            setRefreshFooter(mRefreshFooter ?: ClassicsFooter(context))
+        }
+        setEnableRefresh(isEnableRefresh)
+        setEnableLoadMore(isEnableLoadMore)
+        setEnableAutoLoadMore(false);
+    }
 
     @JvmStatic
     fun SmartRefreshLayout?.refreshLayoutInit(
-        p: IPageEngine<*>?,
-        isEnableRefresh: Boolean,
-        isEnableLoadMore: Boolean
+        p: IPageEngine<*>? = null,
+        isEnableRefresh: Boolean = true,
+        isEnableLoadMore: Boolean = true,
+        time: Int = 500,
+        mRefreshHeader: RefreshHeader? = null,
+        mRefreshFooter: RefreshFooter? = null
     ) {
-        if (this != null) {
-            refreshLayoutInit(this, p, isEnableRefresh, isEnableLoadMore, 500)
+        if(this == null || p == null){
+            Log.i("refreshLayoutInit", "init : SmartRefreshLayout == null  || IPageEngine == null")
+            return
         }
-    }
 
-    @JvmStatic
-    fun SmartRefreshLayout.refreshLayoutInit(p: IPageEngine<*>?) {
-        refreshLayoutInit(this, p, true, true, 500)
-    }
-
-    @JvmStatic
-    fun refreshLayoutInit(
-        refreshLayout: SmartRefreshLayout,
-        p: IPageEngine<*>?,
-        isEnableRefresh: Boolean,
-        isEnableLoadMore: Boolean,
-        time: Int
-    ) {
         Log.i("refreshLayoutInit", ": $isEnableRefresh , $isEnableLoadMore")
         if (isEnableRefresh) {
-            refreshLayout.setOnRefreshListener {
-                it.finishRefresh(time)
+            setOnRefreshListener {
+                finishRefresh(time)
                 p?.refresh()
             }
         }
         if (isEnableLoadMore) {
-            refreshLayout.setOnLoadMoreListener {
-                it.finishLoadMore(time)
+            setOnLoadMoreListener {
+                finishLoadMore(time)
                 p?.next()
             }
         }
         if (isEnableRefresh) {
-            refreshLayout.setRefreshHeader(MaterialHeader(refreshLayout.context))
+            setRefreshHeader(mRefreshHeader ?: MaterialHeader(context))
         }
         if (isEnableLoadMore) {
-            refreshLayout.setRefreshFooter(ClassicsFooter(refreshLayout.context))
+            setRefreshFooter(mRefreshFooter ?: ClassicsFooter(context))
         }
-        refreshLayout.setEnableRefresh(isEnableRefresh)
-        refreshLayout.setEnableLoadMore(isEnableLoadMore)
-        refreshLayout.setEnableAutoLoadMore(false);
+        setEnableRefresh(isEnableRefresh)
+        setEnableLoadMore(isEnableLoadMore)
+        setEnableAutoLoadMore(false);
     }
 
 //    @Throws(Exception::class)
@@ -465,5 +512,89 @@ object ExtensionCoreMethod {
     fun <V : ViewModel> Class<V>.getViewModel(vp: ViewModelProvider): V {
         return vp.get(this)
     }
+
+//    /**
+//     * 获取基于“key”的可观察的value
+//     */
+//    @JvmStatic
+//    fun <T> String.getSaveStateValue(holder: IHolderSavedStateHandle): T? {
+//        return holder.getHolderSavedStateHandle()[this]
+//    }
+//
+//    @JvmStatic
+//    fun <T> String.getSaveStateValue(saveStateHandle: ISaveStateHandle): T? {
+//        return saveStateHandle[this]
+//    }
+
+    @JvmStatic
+    fun <T> String.liveSaveStateObserver(
+        lifecycle: LifecycleOwner?, saveStateHandle: IHolderSavedStateHandler?, observer: Observer<T?>
+    ) {
+        liveSaveStateObserver(lifecycle, saveStateHandle?.getHolderSavedStateHandle(), observer)
+    }
+
+    @JvmStatic
+    fun <T> String.liveSaveStateObserver(
+        lifecycle: LifecycleOwner?, saveStateHandle: ISaveStateHandle?, observer: Observer<T?>
+    ) {
+        if (lifecycle != null) {
+            saveStateHandle?.getLiveData<T>(this)?.observe(lifecycle, observer)
+        } else {
+            saveStateHandle?.getLiveData<T>(this)?.observeForever(observer)
+        }
+    }
+
+    /**
+     * 获取基于“key”的可观察的value
+     */
+    @JvmStatic
+    fun <T> String.getSaveStateValue(holder: IHolderSavedStateHandler): T? {
+        return holder.getHolderSavedStateHandle()[this]
+    }
+
+    /**
+     * 保存基于“key”的value 存储于bundle基于SavedStateHandler api
+     */
+    @JvmStatic
+    fun <T> String.saveStateChange(holder: IHolderSavedStateHandler?, v: T) {
+        holder?.getHolderSavedStateHandle()?.set(this, v)
+    }
+
+    /**
+     * 保存基于“key”的value 存储于bundle基于SavedStateHandler api
+     */
+    @JvmStatic
+    fun <T> String.saveStateChange(holder: IHolderSavedStateHandle, v: T) {
+        holder.getHolderSavedStateHandle()[this] = v
+    }
+
+    /**
+     * 保存基于“key”的value 存储于bundle基于SavedStateHandler api
+     */
+    @JvmStatic
+    fun <T> String.saveStateChange(saveStateHandle: ISaveStateHandle, v: T) {
+        saveStateHandle[this] = v
+    }
+
+    /**
+     * 获取基于“key”的可观察的value
+     */
+    @JvmStatic
+    fun <T> String.getSaveStateValue(holder: IHolderSavedStateHandle): T? {
+        return holder.getHolderSavedStateHandle()[this]
+    }
+
+    @JvmStatic
+    fun <T> String.getSaveStateValue(saveStateHandle: ISaveStateHandle): T? {
+        return saveStateHandle[this]
+    }
+
+    fun View?.viewVisibility(show: Boolean = true) {
+        this?.apply {
+            visibility = if (show) View.VISIBLE else View.GONE
+        }
+    }
+
+    val isHeatDarkMode = true
 
 }

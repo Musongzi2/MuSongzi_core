@@ -2,16 +2,50 @@ package com.musongzi.core.base.vm
 
 import android.os.Bundle
 import android.util.Log
+import androidx.lifecycle.SavedStateHandle
 import com.musongzi.core.base.bean.BusinessInfo
+import com.musongzi.core.base.map.SaveStateHandleWarp
 import com.musongzi.core.itf.*
 import com.musongzi.core.itf.holder.*
 import com.musongzi.core.util.InjectionHelp
+import com.musongzi.core.util.InjectionHelp.BUSINESS_NAME_KEY
 import java.lang.ref.WeakReference
-
 /*** created by linhui * on 2022/9/15
  *
  * */
-abstract class DataDriveViewModel<B:IBusiness> : CoreViewModel<IHolderActivity>() ,IHolderViewModel<B>,IHolderNeed{
+abstract class DataDriveViewModel<B : IBusiness> : CoreViewModel, IHolderViewModel<B>,
+    IHolderNeed {
+
+
+//    fun <T> observerByKey(key:String,lifecycleOwner: LifecycleOwner,observer: Observer<T>){
+//        key.liveSaveStateObserver(lifecycleOwner,this,observer)
+//    }
+//
+//    fun <T> observerLocalByKey(key:String,lifecycleOwner: LifecycleOwner,observer: Observer<T>){
+//        key.liveSaveStateObserver(lifecycleOwner,localSavedStateHandle,observer)
+//    }
+
+    constructor():super(){
+        Log.i(TAG, "constructor by : ()")
+    }
+    constructor(saved: SavedStateHandle) : super() {
+        Log.i(TAG, "constructor by : (saved: SavedStateHandle)")
+        setHolderSavedStateHandle(SaveStateHandleWarp(saved))
+    }
+
+    private val businessInfo: BusinessInfo?
+        get() {
+            return getHolderSavedStateHandle()?.run {
+                get(BUSINESS_NAME_KEY) as? BusinessInfo
+            }
+        }
+    private val business: B by lazy {
+        val b = createBusiness()
+        (b as? IAgentWrap<IAgent>)?.setAgentModel(agentGet())
+        b.afterHandlerBusiness()
+        b
+    }
+    private var savedInstanceState: WeakReference<Bundle?>? = null
 
 
     override fun getHolderNeed(): INeed? {
@@ -20,30 +54,16 @@ abstract class DataDriveViewModel<B:IBusiness> : CoreViewModel<IHolderActivity>(
 
 
     override fun showDialog(msg: String?) {
-
+        getHolderClient()?.showDialog(msg)
     }
 
     override fun disimissDialog() {
-
+        getHolderClient()?.disimissDialog()
     }
 
     override fun getHolderClient(): IClient? {
-        return null;
+        return holderActivity?.get()
     }
-
-
-    override fun <A> holderApiInstance(): IHolderApi<A>? {
-        return this as? IHolderApi<A>;
-    }
-
-    override fun handlerSavedInstanceState(savedInstanceState: Bundle?) {
-        sourceBundle = WeakReference(savedInstanceState)
-    }
-
-    override fun isSavedInstanceStateNull(): Boolean {
-        return sourceBundle == null || sourceBundle?.get() == null
-    }
-
 
     final override fun setHolderSavedStateHandle(savedStateHandle: ISaveStateHandle) {
         Log.i(TAG, "setHolderSavedStateHandle: ${javaClass.canonicalName} , " + savedStateHandle)
@@ -51,37 +71,31 @@ abstract class DataDriveViewModel<B:IBusiness> : CoreViewModel<IHolderActivity>(
     }
 
     final override fun getHolderSavedStateHandle(): ISaveStateHandle {
-        return mSavedStateHandles[REMOTE_SAVED_INDEX]!!
+        return super.mSavedStateHandles[REMOTE_SAVED_INDEX]
+            ?: throw ExceptionInInitializerError("DataDriveViewModel的子类注入方式错误 ${javaClass.canonicalName}")
     }
-
-
-    private var sourceBundle: WeakReference<Bundle?>? = null
-
-
 
     protected open fun createBusiness2(): B {
         TODO("Not yet implemented")
     }
+
     override fun getHolderBusiness(): B = business
 
     protected open fun indexBusinessActualTypeArgument() = 0
 
-    override fun attachNow(t: IHolderActivity?) {
-        super.attachNow(t)
-        (business as? IAgentHolder<IAgent>)?.setAgentModel(this)
-        business.afterHandlerBusiness()
-//        handlerAnnotion(business)
+    protected open fun agentGet(): IAgent {
+        return this
     }
 
-    private var businessInfo: BusinessInfo? = null
-    private val business: B by lazy {
-        createBusiness()
-    }
     private fun createBusiness(): B {
         return businessInfo?.let {
             Log.i(TAG, "createBusiness: 1")
-            InjectionHelp.getClassLoader().loadClass(it.className)?.newInstance() as? B
-        } ?: (InjectionHelp.findGenericClass<B>(javaClass, indexBusinessActualTypeArgument()).let {
+            InjectionHelp.getClassLoader().loadClass(it.className)
+                ?.newInstance() as? B
+        } ?: (InjectionHelp.findGenericClass<B>(
+            javaClass,
+            indexBusinessActualTypeArgument()
+        ).let {
             if (it.isInterface) {
                 Log.i(TAG, "createBusiness: 2")
                 createBusiness2()
@@ -90,20 +104,6 @@ abstract class DataDriveViewModel<B:IBusiness> : CoreViewModel<IHolderActivity>(
                 it.newInstance()
             }
         })
-    }
-
-    override fun putArguments(d: Bundle?) {
-        d?.let {
-            businessInfo = d.getParcelable(InjectionHelp.BUSINESS_NAME_KEY)
-        }
-    }
-
-    override fun getArguments(): Bundle? {
-        return super.holderActivity?.get()?.getArguments()
-    }
-
-    override fun handlerArguments() {
-
     }
 
 }
