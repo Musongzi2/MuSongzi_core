@@ -14,6 +14,7 @@ import com.musongzi.core.base.manager.ManagerInstanceHelp.Companion.instanceHelp
 import com.musongzi.core.base.manager.ManagerInstanceHelp.Companion.instanceOnReady
 import com.musongzi.core.base.manager.ManagerUtil
 import com.musongzi.core.base.manager.RetrofitManager
+import com.musongzi.core.itf.holder.IHodlerIdentity
 import com.musongzi.core.util.WriteTxt
 import com.musongzi.test.bean.DiscoverBannerBean
 import com.musongzi.test.event.ILoginEvent
@@ -37,7 +38,7 @@ class MyApplication : MszApplicaton() {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onMessage(d: DiscoverBannerBean) {
-        resources.getStringArray(R.array.manager_instance)
+//        resources.getStringArray(R.array.manager_instance)
     }
 
     override fun getManagers(): Array<ManagerInstanceHelp> {
@@ -45,10 +46,10 @@ class MyApplication : MszApplicaton() {
         return arrayOf(
             com.musongzi.spi.Factory.spiManagerHelp(MyRuleProxy::class.java),
 //            ConfigManager.ManagerInstanceHelpImpl(),
-            instanceHelp {
+            instanceHelp("RetrofitCallBackInstance") {
                 RetrofitCallBackInstance()
             },
-            instanceOnReady {
+            instanceOnReady("EventBus register") {
                 EventBus.getDefault().register(this@MyApplication)
             }
         )
@@ -78,6 +79,10 @@ class MyApplication : MszApplicaton() {
 
             })
         }
+
+        override val otherHodlerIdentity: IHodlerIdentity? = null
+
+        override val holderIdentityName: String = "RetrofitCallBackInstance"
 
 
     }

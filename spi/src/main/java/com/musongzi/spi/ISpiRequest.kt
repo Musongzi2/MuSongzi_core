@@ -5,6 +5,8 @@ interface ISpiRequest {
 
    fun getRequestLoaderClass():Class<*>
    fun orderName():String
+
+   @JvmDefault
    fun letMeInstance(second: Class<*>?): Any? = null
 
 }

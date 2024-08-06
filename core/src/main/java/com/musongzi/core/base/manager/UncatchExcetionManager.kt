@@ -1,6 +1,7 @@
 package com.musongzi.core.base.manager
 
 import android.util.Log
+import com.musongzi.core.itf.holder.IHodlerIdentity
 import com.musongzi.core.util.WriteTxt
 
 /*** created by linhui * on 2022/8/25 */
@@ -14,6 +15,10 @@ class UncatchExcetionManager :InstanceManager, Thread.UncaughtExceptionHandler {
         super.onReady(a)
         Thread.setDefaultUncaughtExceptionHandler(this)
     }
+
+    override val otherHodlerIdentity: IHodlerIdentity? = null
+    override val holderIdentityName: String
+        get() = "UncatchExcetion ${hashCode()}"
 
     override fun uncaughtException(t: Thread, e: Throwable) {
         Log.i(TAG, "message: t = ${e.message}")

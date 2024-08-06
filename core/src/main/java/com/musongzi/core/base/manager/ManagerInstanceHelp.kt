@@ -9,37 +9,42 @@ interface ManagerInstanceHelp {
 
     fun readyNow(my: InstanceManager): Any? = null
 
-    fun key():String
-
+    fun key(): String
 
     companion object {
 
 
         const val NORMAL_MANAGER_CLASS = "ManagerInstanceHelpImpl"
 
-        fun instanceHelp(instance: () -> InstanceManager): ManagerInstanceHelp {
+        @JvmOverloads
+        fun instanceHelp(name: String? = null,instance: () -> InstanceManager): ManagerInstanceHelp {
             return object : ManagerInstanceHelp {
+
                 override fun instance(): InstanceManager? {
                     return instance.invoke()
                 }
 
                 override fun key(): String {
-                   return this.hashCode().toString()
+                    return "$name ${hashCode()}"
                 }
+
+                override fun toString() = key()
 
             }
         }
 
-
-        fun instanceOnReady(runnable: Runnable): ManagerInstanceHelp {
+        @JvmOverloads
+        fun instanceOnReady(name: String? = null , runnable: Runnable ): ManagerInstanceHelp {
             return object : ManagerInstanceHelp {
                 override fun instance(): InstanceManager? {
                     return InstanceManagerSimple(runnable)
                 }
 
                 override fun key(): String {
-                    return this.hashCode().toString()
+                    return "$name ${hashCode()}"
                 }
+
+                override fun toString() = key()
             }
         }
 

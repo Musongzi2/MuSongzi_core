@@ -13,7 +13,7 @@ import java.lang.ref.WeakReference
 /*** created by linhui * on 2022/9/15
  *
  * */
-abstract class DataDriveViewModel<B : IBusiness> constructor(saved: SavedStateHandle? = null) : CoreViewModel(), IHolderViewModel<B>,
+abstract class DataDriveViewModel<B : IBusiness> @JvmOverloads constructor(saved: SavedStateHandle? = null) : CoreViewModel(), IHolderViewModel<B>,
     IHolderNeed {
 
     init {

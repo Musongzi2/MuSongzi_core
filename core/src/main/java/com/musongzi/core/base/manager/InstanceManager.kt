@@ -1,9 +1,10 @@
 package com.musongzi.core.base.manager
 
 import android.util.Log
+import com.musongzi.core.itf.holder.IHodlerIdentity
 
 /*** created by linhui * on 2022/7/29 */
-interface InstanceManager {
+interface InstanceManager : IHodlerIdentity {
 
 //    fun managerId():Int = hashCode()
 

@@ -21,12 +21,14 @@ import com.musongzi.core.base.page2.PageLoader
 import com.musongzi.core.base.page2.RequestObservableBean
 import com.musongzi.core.base.page2.SimplePageCall
 import com.musongzi.core.itf.page.IPageEngine
+import com.musongzi.spi.SpiManager
 import com.musongzi.test.MszTestApi
 import com.musongzi.test.R
 import com.musongzi.test.bean.ListDataBean
 import com.musongzi.test.bean.UserInfo
 import com.musongzi.test.databinding.FragmentRecyclePageBinding
 import com.musongzi.test.databinding.ItemUserInfoBinding
+import com.musongzi.test.spi.MyTestSpiImp
 import com.musongzi.test.vm.ListDataViewModel
 import io.reactivex.rxjava3.core.Observable
 
@@ -124,5 +126,8 @@ class RecyclePageFragment : DataBindingFragment<FragmentRecyclePageBinding>() {
 
     override fun initData() {
 //        safeGetPageEngine().refresh()
+
+        SpiManager.loadInstance<MyTestSpiImp.Test>(MyTestSpiImp())?.hello()
+
     }
 }

@@ -3,9 +3,10 @@ package com.musongzi
 import android.util.Log
 import com.musongzi.core.base.manager.InstanceManager
 import com.musongzi.core.base.manager.ManagerInstanceHelp
+import com.musongzi.core.itf.holder.IHodlerIdentity
 
 /*** created by linhui * on 2022/8/25 */
-class ConfigManager : InstanceManager {
+class ConfigManager @JvmOverloads constructor(override val otherHodlerIdentity: IHodlerIdentity? = null, override val holderIdentityName: String = "ConfigManager") : InstanceManager {
     fun showConfig() {
 
         Log.i(CONFIG_MANAGER, "showConfig: " + hashCode())

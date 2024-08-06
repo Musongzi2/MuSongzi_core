@@ -1,5 +1,6 @@
 package com.musongzi.spi
 
+import android.os.Build
 import com.musongzi.core.ExtensionCoreMethod.getSaveStateValue
 import com.musongzi.core.ExtensionCoreMethod.saveStateChange
 import com.musongzi.core.base.manager.InstanceManager
@@ -7,6 +8,7 @@ import com.musongzi.core.itf.IHolderSavedStateHandle
 import com.musongzi.core.base.map.LocalSavedHandler
 import com.musongzi.core.itf.ISaveStateHandle
 import com.musongzi.core.base.manager.ManagerInstanceHelp
+import com.musongzi.core.itf.holder.IHodlerIdentity
 import java.lang.ref.WeakReference
 
 /*** created by linhui * on 2022/8/21
@@ -22,14 +24,14 @@ class SpiManager private constructor() : InstanceManager, IHolderSavedStateHandl
     /**
      * 加载规则
      */
-    private var rulre: IStrategyRule? = null
+    private var ruler: IStrategyRule? = null
 
 
     private fun <T> load(
         request: ISpiRequest,
-        s: HashMap<String, Pair<Class<*>, Class<*>>>? = null
+        s: MutableMap<String, Pair<Class<*>, Class<*>>>? = null
     ): T? {
-        var sets: HashMap<String, Pair<Class<*>, Class<*>>>?
+        var sets: MutableMap<String, Pair<Class<*>, Class<*>>>?
         sets = s ?: CACHE_PARIE_KEY.getSaveStateValue(this)
         if (sets == null) {
             sets = HashMap()
@@ -42,18 +44,24 @@ class SpiManager private constructor() : InstanceManager, IHolderSavedStateHandl
 
     private fun findLoad(
         request: ISpiRequest,
-        sets: HashMap<String, Pair<Class<*>, Class<*>>>
+        sets: MutableMap<String, Pair<Class<*>, Class<*>>>
     ): Any? {
-        ruleCheck(request, sets)
+        checkRuler(request, sets) ?: return null
         return load(request, sets)
     }
 
-    private fun ruleCheck(
+    private fun checkRuler(
         request: ISpiRequest,
-        sets: java.util.HashMap<String, Pair<Class<*>, Class<*>>>
-    ) {
-        val clazz = rulre?.onLoadRule(request)!!
-        sets[request.orderName()] = request.getRequestLoaderClass() to clazz
+        sets: MutableMap<String, Pair<Class<*>, Class<*>>>
+    ): Pair<Class<*>, Class<*>>? {
+        val clazz = ruler?.onLoadRule(request) ?: return null
+        val p = request.getRequestLoaderClass() to clazz
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
+            sets.putIfAbsent(request.orderName(), request.getRequestLoaderClass() to clazz)
+        } else {
+            sets[request.orderName()] = request.getRequestLoaderClass() to clazz
+        }
+        return p
     }
 
 //    override fun managerId(): Int {
@@ -61,9 +69,13 @@ class SpiManager private constructor() : InstanceManager, IHolderSavedStateHandl
 //    }
 
     override fun onReady(a: Any?) {
-        rulre = a as? IStrategyRule
+        ruler = a as? IStrategyRule
         setHolderSavedStateHandle(LocalSavedHandler())
     }
+
+    override val otherHodlerIdentity: IHodlerIdentity? = null
+    override val holderIdentityName: String
+        get() = "$SPI_MANAGER ${hashCode()}"
 
     override fun getHolderSavedStateHandle(): ISaveStateHandle {
         return mISaveStateHandle
@@ -86,6 +98,10 @@ class SpiManager private constructor() : InstanceManager, IHolderSavedStateHandl
             return MANAGER
         }
 
+        override fun toString(): String {
+            return MANAGER?.holderIdentityName ?: "$SPI_MANAGER not instance"
+        }
+
         override fun readyNow(my: InstanceManager): Any? {
             return rule.get()?.newInstance()
         }
@@ -103,7 +119,7 @@ class SpiManager private constructor() : InstanceManager, IHolderSavedStateHandl
         const val SPI_MANAGER = "SpiManager"
         const val CACHE_PARIE_KEY = "CACHE_PARIE_KEY"
 
-        var MANAGER: SpiManager? = null
+        internal var MANAGER: SpiManager? = null
 
         /**
          * 加载需要的实体,基于[ISpiRequest.orderName].

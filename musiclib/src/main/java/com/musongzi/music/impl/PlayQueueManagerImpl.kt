@@ -8,6 +8,7 @@ import com.musongzi.core.base.manager.ManagerUtil.getHolderManager
 import com.musongzi.core.base.manager.ManagerUtil.manager
 import com.musongzi.core.itf.IAttribute
 import com.musongzi.core.itf.ILifeObject
+import com.musongzi.core.itf.holder.IHodlerIdentity
 import com.musongzi.music.itf.*
 import com.musongzi.music.itf.IPlayQueueManager.Companion.NORMAL_NAME
 import com.musongzi.music.itf.small.*
@@ -15,7 +16,7 @@ import com.musongzi.music.itf.small.*
 /*** created by linhui
  *管理一个播放队列
  * * on 2022/7/28 */
-internal class PlayQueueManagerImpl :
+internal class PlayQueueManagerImpl @JvmOverloads constructor(override val otherHodlerIdentity: IHodlerIdentity? = null, override val holderIdentityName: String = "PlayQueueManagerImpl") :
     ISmartPlayQueueManager, PlayMediaObervser {
 
     private var observerStates = HashSet<PlayMediaObervser>()

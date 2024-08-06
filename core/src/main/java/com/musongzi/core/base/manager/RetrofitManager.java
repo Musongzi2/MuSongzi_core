@@ -73,6 +73,7 @@ public class RetrofitManager {
         if (okHttpClient == null) {
             Cache cache = new Cache(ActivityThreadHelp.getCurrentApplication().getCacheDir(), 1024 * 1024 * 200);
             okHttpClient = new OkHttpClient().newBuilder()
+//                    .cache(cache)
                     //添加日志拦截器
                     .addInterceptor(new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)).build();
         }

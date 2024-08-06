@@ -3,6 +3,7 @@ package com.musongzi.core.base.manager
 import android.util.Log
 import com.musongzi.core.ExtensionCoreMethod.exceptionRun
 import com.musongzi.core.itf.IHolderLockObject
+import com.musongzi.core.itf.holder.IHodlerIdentity
 import com.musongzi.core.util.ActivityThreadHelp
 import com.musongzi.core.util.WriteTxt
 
@@ -10,11 +11,11 @@ import com.musongzi.core.util.WriteTxt
  * 管理 单例的一个管理者服务集合
  *
  * * on 2022/7/29 */
-internal class ManagerService : IManagerService,IHolderLockObject {
+internal class ManagerService : IManagerService, IHolderLockObject {
 
     private var isReady = false
     private var managers = HashMap<String, InstanceManager>();
-    private val lockObject = object :Object(){
+    private val lockObject = object : Object() {
         override fun finalize() {
             WriteTxt.wirte("\n time = ${System.currentTimeMillis()} finalize ManagerService \n")
         }
@@ -39,6 +40,12 @@ internal class ManagerService : IManagerService,IHolderLockObject {
         }
     }
 
+    override val otherHodlerIdentity: IHodlerIdentity? = null
+    override val holderIdentityName: String
+        get() {
+            return "$MANAGER_ARRAY_NAME ${hashCode()}"
+        }
+
 
     override fun <I> getManager(id: String): I? {
         return managers[id] as? I
@@ -55,17 +62,17 @@ internal class ManagerService : IManagerService,IHolderLockObject {
                 return
             }
 //        val instanceManagers = SparseArray<InstanceManager>()
-            val set: HashSet<ManagerInstanceHelp> = if (managers is HashSet) {
+            val set: MutableSet<ManagerInstanceHelp> = if (managers is MutableSet) {
                 managers;
             } else {
-                HashSet<ManagerInstanceHelp>().apply {
+                LinkedHashSet<ManagerInstanceHelp>().apply {
                     addAll(managers)
                 }
             }
 
-            exceptionRun {
-                loadXmlStringManager(set, classLoader)
-            }
+//            exceptionRun {
+            loadXmlStringManager(set, classLoader)
+//            }
             for (m in set) {
                 try {
                     val instanceManager = if (m.classLoadPathName() != null) {
@@ -76,9 +83,9 @@ internal class ManagerService : IManagerService,IHolderLockObject {
                     }
                     instanceManager.onReady(m.readyNow(instanceManager))
                     this.managers[m.key()] = instanceManager
-                    Log.i(TAG, "loadManagers: loaded key = ${m.key()}")
+                    Log.d(TAG, "loadManagers: loaded key = ${m.key()}")
                 } catch (e: Exception) {
-                    Log.i(TAG, "loadManagers: err load manager name = $m")
+                    Log.d(TAG, "loadManagers: err load manager name = $m")
                     e.printStackTrace()
                 }
             }
@@ -90,23 +97,27 @@ internal class ManagerService : IManagerService,IHolderLockObject {
      * 加载主项目下的string name = [MANAGER_ARRAY_NAME]的数组
      * [MANAGER_ARRAY_NAME]所标识的是 [ManagerInstanceHelp] 接口继承类
      */
-    private fun loadXmlStringManager(set: HashSet<ManagerInstanceHelp>, classLoader: ClassLoader) {
+    private fun loadXmlStringManager(set: MutableSet<ManagerInstanceHelp>, classLoader: ClassLoader) {
         val packageName = ActivityThreadHelp.getCurrentApplication().packageName
 
-        val id = ActivityThreadHelp.getCurrentApplication().resources.getIdentifier(MANAGER_ARRAY_NAME,"array",packageName)
+        val id = ActivityThreadHelp.getCurrentApplication().resources.getIdentifier(MANAGER_ARRAY_NAME, "array", packageName)
 //        Log.i(TAG, "loadXmlStringManager: err id = $id , $packageName")
 //        val clazzR = Class.forName("$packageName.R${'$'}array")
 //        val field = clazzR.getDeclaredField(MANAGER_ARRAY_NAME)
 //        val id = field.get(null) as Int
+        if (id == 0) {
+            Log.d(TAG, "loadXmlStringManager: arrays is empty")
+            return
+        }
         val array = ActivityThreadHelp.getCurrentApplication().resources.getStringArray(id)
+
         for (clazzName in array) {
             try {
-
                 val instance = classLoader.loadClass(clazzName).newInstance()
                 set.add(instance as ManagerInstanceHelp)
-                Log.i(TAG, "loadXmlStringManager: succed $clazzName")
+                Log.d(TAG, "loadXmlStringManager: succed $clazzName")
             } catch (e: Exception) {
-                Log.i(TAG, "loadXmlStringManager:  err   $clazzName")
+                Log.d(TAG, "loadXmlStringManager: error  $clazzName")
                 e.printStackTrace()
             }
         }
