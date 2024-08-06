@@ -1,34 +1,32 @@
 package com.musongzi.test.fragment
 
-import android.os.Bundle
+import android.annotation.SuppressLint
 import android.util.Log
 import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.LifecycleOwner
-import com.musongzi.comment.util.SourceImpl
+import com.google.android.exoplayer2.ExoPlayer
+import com.google.android.exoplayer2.MediaItem
+import com.google.android.exoplayer2.Player
+import com.google.android.exoplayer2.source.DefaultMediaSourceFactory
+import com.google.android.exoplayer2.source.MediaSource
+import com.google.android.exoplayer2.source.hls.HlsMediaSource
+import com.google.android.exoplayer2.upstream.DataSource
+import com.google.android.exoplayer2.upstream.DefaultDataSource
+import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.musongzi.core.ExtensionCoreMethod.adapter
 import com.musongzi.core.ExtensionCoreMethod.linearLayoutManager
 import com.musongzi.core.ExtensionCoreMethod.liveSaveStateObserver
 import com.musongzi.core.ExtensionCoreMethod.refreshLayoutInit
-import com.musongzi.core.ExtensionCoreMethod.saveStateChange
 import com.musongzi.core.base.bean.IUserInfo
 import com.musongzi.core.base.fragment.DataBindingFragment
-import com.musongzi.core.base.fragment.MszFragment
 import com.musongzi.core.base.page2.PageLoader
 import com.musongzi.core.base.page2.RequestObservableBean
 import com.musongzi.core.base.page2.SimplePageCall
 import com.musongzi.core.itf.page.IPageEngine
-import com.musongzi.spi.SpiManager
-import com.musongzi.test.MszTestApi
-import com.musongzi.test.R
 import com.musongzi.test.bean.ListDataBean
 import com.musongzi.test.bean.UserInfo
 import com.musongzi.test.databinding.FragmentRecyclePageBinding
 import com.musongzi.test.databinding.ItemUserInfoBinding
-import com.musongzi.test.spi.MyTestSpiImp
 import com.musongzi.test.vm.ListDataViewModel
 import io.reactivex.rxjava3.core.Observable
 
@@ -47,6 +45,15 @@ class RecyclePageFragment : DataBindingFragment<FragmentRecyclePageBinding>() {
     private var pageLoad: IPageEngine<UserInfo>? = null
     val viewmodel: ListDataViewModel by viewModels()
 
+    override fun notifyDataSetChangedItem(postiont: Int) {
+        dataBinding.idRecyclerView.adapter?.notifyItemChanged(postiont)
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    override fun notifyDataSetChanged() {
+        dataBinding.idRecyclerView.adapter?.notifyDataSetChanged()
+    }
+
     override fun initView() {
 
 
@@ -57,9 +64,20 @@ class RecyclePageFragment : DataBindingFragment<FragmentRecyclePageBinding>() {
 
         dataBinding.idSmartRefreshLayout.refreshLayoutInit(safeGetPageEngine())
 
+//        var playItemBean:UserInfo? = null
+
         if (dataBinding.idRecyclerView.adapter == null) {
             dataBinding.idRecyclerView.linearLayoutManager {
-                safeGetPageEngine().adapter(ItemUserInfoBinding::class.java)
+                safeGetPageEngine().adapter(ItemUserInfoBinding::class.java){d,i,p->
+                    d.idTitleTv.setOnClickListener {
+                        if(safePlayer().isPlaying){
+                            safePlayer().pause()
+                        }else {
+                            safePlayer().play()
+                        }
+                        notifyDataSetChanged()
+                    }
+                }
             }
         }
     }
@@ -124,10 +142,65 @@ class RecyclePageFragment : DataBindingFragment<FragmentRecyclePageBinding>() {
         return pageLoad!!
     }
 
+    private var player : ExoPlayer? = null
+
+    fun safePlayer()=
+        if(player == null)
+            ExoPlayer.Builder(this@RecyclePageFragment.getHolderContext()!!).build().apply {
+
+//            val s: DataSource.Factory = DefaultDataSourceFactory(this@RecyclePageFragment.getHolderContext()!!)
+//            val source = HlsMediaSource.Factory(s)
+//
+//
+//            addMediaSource(source.createMediaSource(MediaItem.fromUri(music)))
+
+            addMediaSource(DefaultMediaSourceFactory(this@RecyclePageFragment.requireContext()).createMediaSource(MediaItem.fromUri(music)))
+
+//            addMediaItem()
+
+            repeatMode = Player.REPEAT_MODE_ALL
+            prepare()
+            addListener(object :Player.Listener{
+                override fun onPlaybackStateChanged(playbackState: Int) {
+                    when(playbackState){
+                        Player.STATE_BUFFERING->{
+                            Log.d(TAG, "onPlaybackStateChanged: STATE_BUFFERING")
+                        }
+                        Player.STATE_ENDED->{
+                            Log.d(TAG, "onPlaybackStateChanged: STATE_ENDED")
+                        }
+                        Player.STATE_IDLE->{
+                            Log.d(TAG, "onPlaybackStateChanged: STATE_IDLE")
+                        }
+                        Player.STATE_READY->{
+                            Log.d(TAG, "onPlaybackStateChanged: STATE_READY")
+                        }
+                    }
+                }
+            })
+            player = this
+        }else{
+            player!!
+        }
+
+
+    val music = "http://192.168.1.106:8080/我的刻苦铭心的恋人.mp3"
+
     override fun initData() {
 //        safeGetPageEngine().refresh()
 
-        SpiManager.loadInstance<MyTestSpiImp.Test>(MyTestSpiImp())?.hello()
+
+//        SpiManager.loadInstance<MyTestSpiImp.Test>(MyTestSpiImp())?.hello()
+
+
+
+
 
     }
+
+    override fun onDestroy() {
+        player?.release()
+        super.onDestroy()
+    }
+
 }

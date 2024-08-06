@@ -20,7 +20,9 @@
 
 
         <TextView
+            android:id="@+id/id_title_tv"
             android:layout_width="wrap_content"
+            android:foreground="?android:selectableItemBackground"
             android:layout_height="wrap_content"
             android:padding="15dp"
             android:background="#A6E1FB"
