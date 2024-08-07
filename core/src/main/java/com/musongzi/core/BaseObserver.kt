@@ -15,21 +15,21 @@ class BaseObserver<T : Any>(var c: Consumer<T>? = null) : Observer<T> {
 
     override fun onSubscribe(d: Disposable) {
         runOnDisposable?.invoke(d)
-        Log.i(TAG, "onSubscribe: " + Thread.currentThread())
+        Log.d(TAG, "onSubscribe: " + Thread.currentThread())
     }
 
     override fun onNext(t: T) {
-        Log.i(TAG, "onNext: Thread = " + Thread.currentThread() + " : " + t)
+        Log.d(TAG, "onNext: Thread = " + Thread.currentThread() + " : " + t)
         c?.accept(t)
     }
 
     override fun onError(e: Throwable) {
         e.printStackTrace()
-//        Log.i(TAG, "onError: " + e?.message)
+//        Log.d(TAG, "onError: " + e?.message)
     }
 
     override fun onComplete() {
-        Log.i(TAG, "onComplete: " + Thread.currentThread())
+        Log.d(TAG, "onComplete: " + Thread.currentThread())
     }
 
 

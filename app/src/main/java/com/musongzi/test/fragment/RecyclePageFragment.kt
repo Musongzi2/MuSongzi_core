@@ -74,7 +74,8 @@ class RecyclePageFragment : DataBindingFragment<FragmentRecyclePageBinding>() {
                         }else {
                             safePlayer().play()
                         }
-                        notifyDataSetChanged()
+//                        notifyDataSetChanged()
+                        viewmodel.loadDataUser()
                     }
                 }
             }
