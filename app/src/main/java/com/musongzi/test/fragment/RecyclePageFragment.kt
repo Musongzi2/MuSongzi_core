@@ -192,7 +192,7 @@ class RecyclePageFragment : DataBindingFragment<FragmentRecyclePageBinding>() {
 //        SpiManager.loadInstance<MyTestSpiImp.Test>(MyTestSpiImp())?.hello()
 
 
-        viewmodel.loadDataUser()
+//        viewmodel.loadDataUser()
 
 
     }
