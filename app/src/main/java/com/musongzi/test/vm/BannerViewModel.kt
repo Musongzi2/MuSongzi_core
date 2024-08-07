@@ -35,7 +35,7 @@ class BannerViewModel : DataDriveViewModel<EmptyBusiness>() {
     var textContextField = ObservableField<String>()
 
     fun loadCheckBanner() {
-        showDialog("等待")
+//        showDialog("等待")
 //        getApi().grilPic().sub {
 //            disimissDialog()
 //            Log.i(TAG, "loadCheckBanner:grilPic succed")
@@ -54,32 +54,32 @@ class BannerViewModel : DataDriveViewModel<EmptyBusiness>() {
 
     fun upload() {
 
-        PictureSelector.create(getHolderClient() as? Fragment)
-            .openGallery(ofAll())
-            .setSelectionMode(SelectModeConfig.SINGLE)
-            .setImageEngine(GlideEngine.createGlideEngine())
-            .forResult(object : OnResultCallbackListener<LocalMedia> {
-                override fun onCancel() {
-                    // 取消
-                }
-
-                override fun onResult(result: ArrayList<LocalMedia>?) {
-                    result?.let { it ->
-                        Log.i(TAG, "onResult: path ${it[0].realPath}")
-                        val photoRequestBody: RequestBody =
-                            RequestBody.create(MediaType.parse("image/jpg"), File(it[0].realPath))
-                        val photo = MultipartBody.Part.createFormData(
-                            "headerFile",
-                            "headerFile2.jpg",
-                            photoRequestBody
-                        )
-                        RetrofitManager.getInstance().getApi(MszTestApi::class.java, this@BannerViewModel).postPath(photo).sub{ re->
-                            Log.i(TAG, "onResult: $re")
-                            ToastUtils.showToast(ActivityLifeManager.getInstance().getTopActivity(),"成功")
-                        }
-                    }
-                }
-            })
+//        PictureSelector.create(getHolderClient() as? Fragment)
+//            .openGallery(ofAll())
+//            .setSelectionMode(SelectModeConfig.SINGLE)
+//            .setImageEngine(GlideEngine.createGlideEngine())
+//            .forResult(object : OnResultCallbackListener<LocalMedia> {
+//                override fun onCancel() {
+//                    // 取消
+//                }
+//
+//                override fun onResult(result: ArrayList<LocalMedia>?) {
+//                    result?.let { it ->
+//                        Log.i(TAG, "onResult: path ${it[0].realPath}")
+//                        val photoRequestBody: RequestBody =
+//                            RequestBody.create(MediaType.parse("image/jpg"), File(it[0].realPath))
+//                        val photo = MultipartBody.Part.createFormData(
+//                            "headerFile",
+//                            "headerFile2.jpg",
+//                            photoRequestBody
+//                        )
+//                        RetrofitManager.getInstance().getApi(MszTestApi::class.java, this@BannerViewModel).postPath(photo).sub{ re->
+//                            Log.i(TAG, "onResult: $re")
+//                            ToastUtils.showToast(ActivityLifeManager.getInstance().getTopActivity(),"成功")
+//                        }
+//                    }
+//                }
+//            })
     }
 
 

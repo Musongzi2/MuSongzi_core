@@ -68,14 +68,21 @@ class MyApplication : MszApplicaton() {
                         "grilPic" -> {
                             return RetrofitManager.getInstance().getApi(MszTestApi::class.java).grilPic()
                                 .delay(5, TimeUnit.SECONDS).doOnDispose {
-                                Log.i(TAG, "grilPic: 取消")
-                            }
+                                    Log.i(TAG, "grilPic: 取消")
+                                }
+                        }
+
+                        "getArrayEngine" -> {
+                            return RetrofitManager.getInstance().getApi(MszTestApi::class.java).getArrayEngine(args[0] as Int, args[1] as Int, args[2] as? String)
+                                .delay(5, TimeUnit.SECONDS).doOnDispose {
+                                    Log.i(TAG, "getArrayEngine: 取消")
+                                }
                         }
                     }
                     return null;
                 }
 
-                override fun baseUrl() =  URL2
+                override fun baseUrl() = URL2
 
             })
         }

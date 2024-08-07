@@ -9,7 +9,7 @@ import com.musongzi.core.itf.holder.IHolderLifecycle
 import io.reactivex.rxjava3.core.Observer
 
 /*** created by linhui * on 2022/7/18  */
-class SplashBusiness : BaseLifeBusiness<IAgent>(), IAdLoader{
+class SplashBusiness : BaseLifeBusiness<IHolderLifecycle>(), IAdLoader{
 
     override fun <T> loadRemoteConfig(observer: Observer<T>) {
         getNext(AdBusiness::class.java)!!.loadRemoteConfig(observer)

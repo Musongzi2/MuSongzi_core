@@ -1,22 +1,22 @@
 package com.musongzi.core.base.vm
 
 import android.util.Log
-import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ViewModel
 import com.musongzi.core.base.map.LocalSavedHandler
 import com.musongzi.core.itf.*
 import com.musongzi.core.itf.client.IContextClient
-import com.musongzi.core.itf.holder.IHolderActivity
-import com.musongzi.core.itf.holder.IHolderLifecycle
 import com.musongzi.core.itf.holder.IHolderLocaSavedStateHandler
 import com.musongzi.core.util.UiUtil
+import com.trello.rxlifecycle4.LifecycleProvider
 import com.trello.rxlifecycle4.LifecycleTransformer
+import com.trello.rxlifecycle4.RxLifecycle
+import com.trello.rxlifecycle4.android.FragmentEvent
 import io.reactivex.rxjava3.core.Observable
-import io.reactivex.rxjava3.core.ObservableTransformer
-import io.reactivex.rxjava3.disposables.Disposable
+import io.reactivex.rxjava3.subjects.BehaviorSubject
+import java.io.Closeable
 import java.lang.ref.WeakReference
 
-abstract class CoreViewModel : ViewModel(), IAttach<IContextClient>, IWant, IDisconnect, IHolderLocaSavedStateHandler {
+abstract class CoreViewModel : ViewModel(), IAttach<IContextClient>, IWant, IWant2, IDisconnect, IHolderLocaSavedStateHandler {
     protected val TAG = javaClass.simpleName
 
     companion object {
@@ -27,6 +27,45 @@ abstract class CoreViewModel : ViewModel(), IAttach<IContextClient>, IWant, IDis
 
     override fun runOnUiThread(runnable: Runnable) {
         UiUtil.post(runnable = runnable)
+    }
+
+    private val lifecycleSubject = BehaviorSubject.create<ViewModelEvent>()
+
+    private val mLifecycleProvider = object : LifecycleProvider<ViewModelEvent> {
+        override fun lifecycle() = lifecycleSubject.hide()
+
+        override fun <T : Any?> bindUntilEvent(event: ViewModelEvent): LifecycleTransformer<T> {
+            return RxLifecycle.bindUntilEvent(lifecycleSubject, event)
+        }
+
+        override fun <T : Any?> bindToLifecycle() = this@CoreViewModel.bindToLifecycle<T>()
+
+    }
+
+    override fun <T : Any?> bindToLifecycle(): LifecycleTransformer<T> {
+        return RxLifecycle.bind(lifecycleSubject) {
+            Log.d(TAG, "loadData bindToLifecycle: $it")
+            when (it) {
+                ViewModelEvent.LIFE -> {
+                    ViewModelEvent.DIE
+                }
+
+                else -> {
+                    TODO("error ")
+                }
+            }
+        }
+    }
+
+
+    init {
+        lifecycleSubject.onNext(ViewModelEvent.LIFE)
+    }
+
+    override fun addOnClose(close: Closeable) {
+        val method = ViewModel::class.java.getDeclaredMethod("setTagIfAbsent", String::class.java, Object::class.java)
+        method.isAccessible = true
+        method.invoke(this, close.hashCode().toString(), close)
     }
 
 //    override fun getHolderCoLifeCycle(): CoLifeCycle? {
@@ -40,7 +79,8 @@ abstract class CoreViewModel : ViewModel(), IAttach<IContextClient>, IWant, IDis
      */
     @Deprecated("过期，不安全")
     protected var holderActivity: WeakReference<IContextClient?>? = null
-//    private val coLifeCycleImpl by lazy {
+
+    //    private val coLifeCycleImpl by lazy {
 //        VmCoLifeCycle()
 //    }
     protected var mSavedStateHandles = arrayOfNulls<ISaveStateHandle?>(SAVEDS_MAX)
@@ -54,7 +94,8 @@ abstract class CoreViewModel : ViewModel(), IAttach<IContextClient>, IWant, IDis
 
     override fun onCleared() {
         holderActivity = null
-//        onClearOperate(this)
+        lifecycleSubject.onNext(ViewModelEvent.DIE)
+        Log.d(TAG, "onCleared: loadDataUser viewmodel 已死")
     }
 
 //    override fun onClearOperate(any: Any?) = true
@@ -73,13 +114,11 @@ abstract class CoreViewModel : ViewModel(), IAttach<IContextClient>, IWant, IDis
 
     final override fun isAttachNow(): Boolean = holderActivity != null
 
-    override fun <T> bindToLifecycle(): LifecycleTransformer<T>? {
-        return (holderActivity?.get() as? IWant)?.bindToLifecycle()
+
+    enum class ViewModelEvent {
+
+        LIFE,
+        DIE
     }
-
-    final override fun getMainLifecycle(): IHolderLifecycle? = (holderActivity?.get() as? IHolderLifecycle)?.getMainLifecycle()
-
-    final override fun getThisLifecycle(): LifecycleOwner? = (holderActivity?.get() as? IHolderLifecycle)?.getThisLifecycle()
-
 
 }

@@ -187,15 +187,15 @@ object ExtensionCoreMethod {
 
 
     fun SmartRefreshLayout?.refreshLayoutInit(
-        refresh: (()->Unit)? = null,
-        loadMore: (()->Unit)? = null,
+        refresh: (() -> Unit)? = null,
+        loadMore: (() -> Unit)? = null,
         isEnableRefresh: Boolean = true,
         isEnableLoadMore: Boolean = true,
         time: Int = 500,
         mRefreshHeader: RefreshHeader? = null,
         mRefreshFooter: RefreshFooter? = null
     ) {
-        if(this == null){
+        if (this == null) {
             Log.i("refreshLayoutInit", "init : SmartRefreshLayout == null  || IPageEngine == null")
             return
         }
@@ -233,7 +233,7 @@ object ExtensionCoreMethod {
         mRefreshHeader: RefreshHeader? = null,
         mRefreshFooter: RefreshFooter? = null
     ) {
-        if(this == null || p == null){
+        if (this == null || p == null) {
             Log.i("refreshLayoutInit", "init : SmartRefreshLayout == null  || IPageEngine == null")
             return
         }
@@ -490,12 +490,15 @@ object ExtensionCoreMethod {
         }
     }
 
-    @JvmStatic
-    fun <T> Class<T>.getApi(want: IWant? = null): T? {
-        if (!this.isInterface) {
-            return null
-        }
-        return RetrofitManager.getInstance().getApi(this, want)
+    //    @JvmStatic
+//    fun <T> Class<T>.getApi(want: IWant? = null): T? {
+//        if (!this.isInterface) {
+//            return null
+//        }
+//        return RetrofitManager.getInstance().getApi(this, want)
+//    }
+    inline fun <reified T> IWant?.getApi(): T {
+        return RetrofitManager.getInstance().getApi(T::class.java, this)
     }
 
 

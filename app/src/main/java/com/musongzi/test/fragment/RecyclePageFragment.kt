@@ -56,7 +56,6 @@ class RecyclePageFragment : DataBindingFragment<FragmentRecyclePageBinding>() {
 
     override fun initView() {
 
-
         "hahakey".liveSaveStateObserver<String>(this, viewmodel) {
             Log.i(TAG, "ListDataViewModel liveSaveStateObserver: hahakey = $it")
             dataBinding.idTitle.text = it
@@ -193,7 +192,7 @@ class RecyclePageFragment : DataBindingFragment<FragmentRecyclePageBinding>() {
 //        SpiManager.loadInstance<MyTestSpiImp.Test>(MyTestSpiImp())?.hello()
 
 
-
+        viewmodel.loadDataUser()
 
 
     }

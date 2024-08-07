@@ -4,10 +4,11 @@ import com.musongzi.comment.ad.IAdController
 import com.musongzi.comment.ad.IAdLoader
 import com.musongzi.core.base.business.BaseLifeBusiness
 import com.musongzi.core.itf.IAgent
+import com.musongzi.core.itf.holder.IHolderLifecycle
 import io.reactivex.rxjava3.core.Observer
 
 /*** created by linhui * on 2022/7/18 */
-class AdBusiness: BaseLifeBusiness<IAgent>() , IAdLoader {
+class AdBusiness: BaseLifeBusiness<IHolderLifecycle>() , IAdLoader {
     override fun <T> loadRemoteConfig(observer: Observer<T>) {
         TODO("Not yet implemented")
     }

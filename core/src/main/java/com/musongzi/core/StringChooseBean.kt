@@ -7,4 +7,8 @@ open class StringChooseBean : BaseChooseBean() {
 
     var title = ""
 
+    override fun toString(): String {
+        return "[title = $title attributeId = $attributeId]"
+    }
+
 }

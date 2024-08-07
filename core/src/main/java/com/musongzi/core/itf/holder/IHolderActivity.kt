@@ -7,7 +7,7 @@ import com.musongzi.core.itf.INotifyDataSetChanged
 import com.musongzi.core.itf.IWant
 import com.musongzi.core.itf.client.IContextClient
 
-interface IHolderActivity : IHolderArguments<Bundle>, IHolderProviderContext, IWant, IContextClient, INotifyDataSetChanged {
+interface IHolderActivity : IHolderArguments<Bundle>, IHolderProviderContext, IWant, IContextClient, INotifyDataSetChanged,IHolderLifecycle {
     fun getHolderActivity(): FragmentActivity?
 
 }

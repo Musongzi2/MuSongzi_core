@@ -58,17 +58,17 @@ abstract class DataDriveViewModel<B : IBusiness> @JvmOverloads constructor(saved
     }
 
 
-    override fun showDialog(msg: String?) {
-        getHolderClient()?.showDialog(msg)
-    }
+//    override fun showDialog(msg: String?) {
+//        getHolderClient()?.showDialog(msg)
+//    }
+//
+//    override fun disimissDialog() {
+//        getHolderClient()?.disimissDialog()
+//    }
 
-    override fun disimissDialog() {
-        getHolderClient()?.disimissDialog()
-    }
-
-    override fun getHolderClient(): IClient? {
-        return holderActivity?.get()
-    }
+//    override fun getHolderClient(): IClient? {
+//        return holderActivity?.get()
+//    }
 
     final override fun setHolderSavedStateHandle(savedStateHandle: ISaveStateHandle) {
         Log.i(TAG, "setHolderSavedStateHandle: ${javaClass.canonicalName} , " + savedStateHandle)

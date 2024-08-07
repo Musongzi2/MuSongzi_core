@@ -7,11 +7,14 @@ import androidx.lifecycle.DefaultLifecycleObserver;
 import androidx.lifecycle.LifecycleOwner;
 
 import com.musongzi.core.itf.IWant;
+import com.musongzi.core.itf.IWant2;
 import com.musongzi.core.util.ActivityThreadHelp;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.Closeable;
+import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -106,7 +109,7 @@ public class RetrofitManager {
 
 
         if (t == null) {
-            if (want != null && want.getThisLifecycle() != null) {
+            if (want != null) {
                 final WeakReference<CallBack> c = new WeakReference<>(mCallBack);
                 final WeakReference<RetrofitManager> r = new WeakReference<>(MANAGER);
                 InvocationHandler invocationHandler = new InvocationHandler() {
@@ -139,13 +142,24 @@ public class RetrofitManager {
                 };
 
                 t = (T) Proxy.newProxyInstance(tClass.getClassLoader(), new Class<?>[]{tClass}, invocationHandler);
-                want.getThisLifecycle().getLifecycle().addObserver(new DefaultLifecycleObserver() {
-                    @Override
-                    public void onDestroy(@NonNull LifecycleOwner owner) {
-                        Object flag = RetrofitManager.getInstance().apis.remove(key);
-                        Log.i("Observable_Sub", "onDestroy: api " + flag + " , key = " + key);
-                    }
-                });
+
+                if (want instanceof IWant2) {
+                    ((IWant2) want).addOnClose(new Closeable() {
+                        @Override
+                        public void close() {
+                            Object flag = RetrofitManager.getInstance().apis.remove(key);
+//                            Log.d("Observable_Sub", "onDestroy: api " + flag + " , key = " + key);
+                            Log.d("loadData", "onClose: api = " + flag + " , key = " + key);
+                        }
+                    });
+                }
+//                want.getThisLifecycle().getLifecycle().addObserver(new DefaultLifecycleObserver() {
+//                    @Override
+//                    public void onDestroy(@NonNull LifecycleOwner owner) {
+//                        Object flag = RetrofitManager.getInstance().apis.remove(key);
+//                        Log.i("Observable_Sub", "onDestroy: api " + flag + " , key = " + key);
+//                    }
+//                });
             } else {
                 t = RetrofitManager.getInstance().retrofit.create(tClass);
             }
@@ -159,12 +173,12 @@ public class RetrofitManager {
 
     public interface CallBack extends InvocationHandler {
         @Nullable
-        default OkHttpClient getOkHttpCLient(){
+        default OkHttpClient getOkHttpCLient() {
             return null;
         }
 
         @Nullable
-        default Retrofit getRetrofit(){
+        default Retrofit getRetrofit() {
             return null;
         }
 
@@ -174,7 +188,7 @@ public class RetrofitManager {
 
         @Nullable
         @Override
-        default Object invoke(Object proxy, Method method, Object[] args) throws Throwable{
+        default Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
             return null;
         }
     }
