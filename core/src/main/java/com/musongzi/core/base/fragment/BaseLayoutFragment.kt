@@ -3,8 +3,10 @@ package com.musongzi.core.base.fragment
 import android.app.Activity
 import android.app.Dialog
 import android.content.Context
+import android.content.ContextWrapper
 import android.os.Bundle
 import android.util.Log
+import android.view.ContextThemeWrapper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -22,6 +24,8 @@ import com.musongzi.core.ExtensionCoreMethod.layoutInflater
 import com.musongzi.core.base.client.FragmentControlClient
 import com.musongzi.core.base.client.imp.FragmentBusinessControlClientImpl
 import com.musongzi.core.itf.holder.IHolderActivity
+import com.musongzi.core.itf.holder.IHolderLayoutInflater
+import com.musongzi.core.itf.holder.IHolderUiTheme
 import com.musongzi.core.itf.holder.IHolderViewModelFactory
 import com.musongzi.core.itf.holder.IHolderViewModelProvider
 import com.musongzi.core.util.InjectionHelp
@@ -31,10 +35,12 @@ import com.trello.rxlifecycle4.components.support.RxFragment
 /**
 create by linhui , data = 2023/7/1 0:03
  **/
-abstract class BaseLayoutFragment : RxFragment(), IHolderActivity, FragmentControlClient {
+abstract class BaseLayoutFragment : RxFragment(), IHolderActivity, FragmentControlClient, IHolderUiTheme, IHolderLayoutInflater {
     protected lateinit var fControl: FragmentControlClient
     protected val TAG = javaClass.name
     private var tipDialog: Dialog? = null
+
+    override var holderUiThemeRes: Int = 0
 
     override fun showDialog(msg: String?) {
         (tipDialog ?: let {
@@ -50,8 +56,16 @@ abstract class BaseLayoutFragment : RxFragment(), IHolderActivity, FragmentContr
         savedInstanceState: Bundle?
     ): View? {
         fControl = FragmentBusinessControlClientImpl(this)
-        return createView(inflater, container, savedInstanceState)
+        return createView(getHolderLayoutInflater() ?: inflater, container, savedInstanceState)
     }
+
+    override fun getHolderLayoutInflater(): LayoutInflater? =
+        if (holderUiThemeRes == 0) {
+            layoutInflater
+        } else {
+            LayoutInflater.from(ContextThemeWrapper(requireContext(), holderUiThemeRes))
+        }
+
 
     protected open fun createView(
         inflater: LayoutInflater,
@@ -215,62 +229,62 @@ abstract class BaseLayoutFragment : RxFragment(), IHolderActivity, FragmentContr
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Log.i(TAG, "FragmentState:onCreate")
+        Log.d(TAG, "FragmentState:onCreate")
     }
 
     override fun onResume() {
         super.onResume()
-        Log.i(TAG, "FragmentState:onResume")
+        Log.d(TAG, "FragmentState:onResume")
     }
 
     override fun onStart() {
         super.onStart()
-        Log.i(TAG, "FragmentState:onStart")
+        Log.d(TAG, "FragmentState:onStart")
     }
 
     override fun onPause() {
         super.onPause()
-        Log.i(TAG, "FragmentState:onPause")
+        Log.d(TAG, "FragmentState:onPause")
     }
 
     override fun onStop() {
         super.onStop()
-        Log.i(TAG, "FragmentState:onStop")
+        Log.d(TAG, "FragmentState:onStop")
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        Log.i(TAG, "FragmentState:onDestory")
+        Log.d(TAG, "FragmentState:onDestory")
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
-        Log.i(TAG, "FragmentState:onDestoryView")
+        Log.d(TAG, "FragmentState:onDestoryView")
     }
 
     override fun onDetach() {
         super.onDetach()
-        Log.i(TAG, "FragmentState:onDetach")
+        Log.d(TAG, "FragmentState:onDetach")
     }
 
     override fun onAttach(activity: Activity) {
         super.onAttach(activity)
-        Log.i(TAG, "FragmentState:onAttach(activity:$activity)")
+        Log.d(TAG, "FragmentState:onAttach(activity:$activity)")
     }
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        Log.i(TAG, "FragmentState:onAttach(context:$context)")
+        Log.d(TAG, "FragmentState:onAttach(context:$context)")
     }
 
     override fun onHiddenChanged(hidden: Boolean) {
         super.onHiddenChanged(hidden)
-        Log.i(TAG, "FragmentState:onHiddenChange($hidden)")
+        Log.d(TAG, "FragmentState:onHiddenChange($hidden)")
     }
 
     override fun onLowMemory() {
         super.onLowMemory()
-        Log.i(TAG, "FragmentState:onLowMemory")
+        Log.d(TAG, "FragmentState:onLowMemory")
     }
 
 }
