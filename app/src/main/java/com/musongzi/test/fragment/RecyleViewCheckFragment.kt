@@ -42,7 +42,7 @@ class RecyleViewCheckFragment : DataBindingFragment<FragmentRecycleCheckBinding>
         )
 
         RetrofitManager.getInstance().getApi(MszTestApi::class.java, this).getArrayEngine(page = 0,20).sub {
-            source.realData().addAll(it.data)
+            source.realData().addAll(it.data?: mutableListOf())
             dataBinding.idRecyclerView.linearLayoutManager {
                 source.adapter(AdapterStringBinding::class.java, { d, t ->
                     Log.i(TAG, "AdapterString: convert sum = ${++sum}")

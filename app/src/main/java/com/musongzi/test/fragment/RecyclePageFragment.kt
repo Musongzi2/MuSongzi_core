@@ -2,37 +2,41 @@ package com.musongzi.test.fragment
 
 import android.annotation.SuppressLint
 import android.util.Log
+import android.widget.Toast
+import androidx.databinding.ObservableField
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.viewModelScope
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.source.DefaultMediaSourceFactory
-import com.google.android.exoplayer2.source.MediaSource
-import com.google.android.exoplayer2.source.hls.HlsMediaSource
-import com.google.android.exoplayer2.upstream.DataSource
-import com.google.android.exoplayer2.upstream.DefaultDataSource
-import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.musongzi.core.ExtensionCoreMethod.adapter
 import com.musongzi.core.ExtensionCoreMethod.getApi
 import com.musongzi.core.ExtensionCoreMethod.linearLayoutManager
 import com.musongzi.core.ExtensionCoreMethod.liveSaveStateObserver
 import com.musongzi.core.ExtensionCoreMethod.refreshLayoutInit
+import com.musongzi.core.ExtensionCoreMethod.saveStateChange
 import com.musongzi.core.StringChooseBean
-import com.musongzi.core.base.bean.IUserInfo
 import com.musongzi.core.base.fragment.DataBindingFragment
+import com.musongzi.core.base.manager.RetrofitManager
 import com.musongzi.core.base.page2.PageLoader
 import com.musongzi.core.base.page2.RequestObservableBean
 import com.musongzi.core.base.page2.SimplePageCall
 import com.musongzi.core.itf.page.IPageEngine
 import com.musongzi.test.MszTestApi
-import com.musongzi.test.bean.ListDataBean
-import com.musongzi.test.bean.ResponeCodeBean
-import com.musongzi.test.bean.UserInfo
+import com.musongzi.test.api.SimpleApi
 import com.musongzi.test.databinding.FragmentRecyclePageBinding
 import com.musongzi.test.databinding.ItemUserInfoBinding
 import com.musongzi.test.vm.ListDataViewModel
 import io.reactivex.rxjava3.core.Observable
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.channels.broadcast
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.lang.Thread.sleep
+import java.util.Arrays
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -47,7 +51,7 @@ private const val ARG_PARAM2 = "param2"
 class RecyclePageFragment : DataBindingFragment<FragmentRecyclePageBinding>() {
 
     private var pageLoad: IPageEngine<StringChooseBean>? = null
-    val viewmodel: ListDataViewModel by viewModels()
+    val viewModel: ListDataViewModel by viewModels()
 
     override fun notifyDataSetChangedItem(postiont: Int) {
         dataBinding.idRecyclerView.adapter?.notifyItemChanged(postiont)
@@ -60,7 +64,7 @@ class RecyclePageFragment : DataBindingFragment<FragmentRecyclePageBinding>() {
 
     override fun initView() {
 
-        "hahakey".liveSaveStateObserver<String>(this, viewmodel) {
+        "hahakey".liveSaveStateObserver<String>(this, viewModel) {
             Log.i(TAG, "ListDataViewModel liveSaveStateObserver: hahakey = $it")
             dataBinding.idTitle.text = it
         }
@@ -71,11 +75,11 @@ class RecyclePageFragment : DataBindingFragment<FragmentRecyclePageBinding>() {
 
         if (dataBinding.idRecyclerView.adapter == null) {
             dataBinding.idRecyclerView.linearLayoutManager {
-                safeGetPageEngine().adapter(ItemUserInfoBinding::class.java){d,i,p->
+                safeGetPageEngine().adapter(ItemUserInfoBinding::class.java) { d, i, p ->
                     d.idTitleTv.setOnClickListener {
-                        if(safePlayer().isPlaying){
+                        if (safePlayer().isPlaying) {
                             safePlayer().pause()
-                        }else {
+                        } else {
                             safePlayer().play()
                         }
 //                        notifyDataSetChanged()
@@ -92,7 +96,7 @@ class RecyclePageFragment : DataBindingFragment<FragmentRecyclePageBinding>() {
                 SimplePageCall<StringChooseBean>(this@RecyclePageFragment) {
                 override fun getRemoteData(page: Int, pageSize: Int): Observable<List<StringChooseBean>>? {
                     Log.i(TAG, "getRemoteData: page = $page , pageSize = $pageSize")
-                    return getApi<MszTestApi>().getArrayEngine(page,pageSize).map {
+                    return getApi<MszTestApi>().getArrayEngine(page, pageSize).map {
                         it.data
                     }
 //                    return Observable.create {
@@ -149,10 +153,10 @@ class RecyclePageFragment : DataBindingFragment<FragmentRecyclePageBinding>() {
         return pageLoad!!
     }
 
-    private var player : ExoPlayer? = null
+    private var player: ExoPlayer? = null
 
-    fun safePlayer()=
-        if(player == null)
+    fun safePlayer() =
+        if (player == null)
             ExoPlayer.Builder(this@RecyclePageFragment.getHolderContext()!!).build().apply {
 
 //            val s: DataSource.Factory = DefaultDataSourceFactory(this@RecyclePageFragment.getHolderContext()!!)
@@ -161,47 +165,56 @@ class RecyclePageFragment : DataBindingFragment<FragmentRecyclePageBinding>() {
 //
 //            addMediaSource(source.createMediaSource(MediaItem.fromUri(music)))
 
-            addMediaSource(DefaultMediaSourceFactory(this@RecyclePageFragment.requireContext()).createMediaSource(MediaItem.fromUri(music)))
+                addMediaSource(DefaultMediaSourceFactory(this@RecyclePageFragment.requireContext()).createMediaSource(MediaItem.fromUri(music)))
 
 //            addMediaItem()
 
-            repeatMode = Player.REPEAT_MODE_ALL
-            prepare()
-            addListener(object :Player.Listener{
-                override fun onPlaybackStateChanged(playbackState: Int) {
-                    when(playbackState){
-                        Player.STATE_BUFFERING->{
-                            Log.d(TAG, "onPlaybackStateChanged: STATE_BUFFERING")
-                        }
-                        Player.STATE_ENDED->{
-                            Log.d(TAG, "onPlaybackStateChanged: STATE_ENDED")
-                        }
-                        Player.STATE_IDLE->{
-                            Log.d(TAG, "onPlaybackStateChanged: STATE_IDLE")
-                        }
-                        Player.STATE_READY->{
-                            Log.d(TAG, "onPlaybackStateChanged: STATE_READY")
+                repeatMode = Player.REPEAT_MODE_ALL
+                prepare()
+                addListener(object : Player.Listener {
+                    override fun onPlaybackStateChanged(playbackState: Int) {
+                        when (playbackState) {
+                            Player.STATE_BUFFERING -> {
+                                Log.d(TAG, "onPlaybackStateChanged: STATE_BUFFERING")
+                            }
+
+                            Player.STATE_ENDED -> {
+                                Log.d(TAG, "onPlaybackStateChanged: STATE_ENDED")
+                            }
+
+                            Player.STATE_IDLE -> {
+                                Log.d(TAG, "onPlaybackStateChanged: STATE_IDLE")
+                            }
+
+                            Player.STATE_READY -> {
+                                Log.d(TAG, "onPlaybackStateChanged: STATE_READY")
+                            }
                         }
                     }
-                }
-            })
-            player = this
-        }else{
+                })
+                player = this
+            } else {
             player!!
         }
 
 
     val music = "http://192.168.1.106:8080/我的刻苦铭心的恋人.mp3"
 
+//    var sum = ObservableField(1)
+
     override fun initData() {
-//        safeGetPageEngine().refresh()
 
+//        val job = viewmodel.viewModelScope.launch {
+//            Toast.makeText(context, RetrofitManager.getInstance().getApi(SimpleApi::class.java).getArrayEngine(0, 2).data[0].title, Toast.LENGTH_SHORT).show()
+//        }
 
-//        SpiManager.loadInstance<MyTestSpiImp.Test>(MyTestSpiImp())?.hello()
+//        job.cancel()
 
+        viewModel.loadDataUser()
 
-//        viewmodel.loadDataUser()
-
+        "data".liveSaveStateObserver<List<StringChooseBean>>(this,viewModel.localSavedStateHandle){
+            Log.i(TAG, "initData: ${if (it?.isEmpty() == true) null else Arrays.toString(it?.toTypedArray())}")
+        }
 
     }
 

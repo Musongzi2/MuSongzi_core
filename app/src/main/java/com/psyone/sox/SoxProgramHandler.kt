@@ -5,8 +5,6 @@ import android.os.Build
 import android.util.Log
 import android.widget.Toast
 import androidx.annotation.RequiresApi
-import androidx.core.net.toUri
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import com.google.android.exoplayer2.DefaultRenderersFactory
@@ -16,8 +14,6 @@ import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.audio.AudioCapabilities
 import com.google.android.exoplayer2.audio.AudioSink
 import com.google.android.exoplayer2.audio.DefaultAudioSink
-import com.musongzi.core.base.vm.DataDriveViewModel
-import java.io.File
 
 object SoxProgramHandler {
 

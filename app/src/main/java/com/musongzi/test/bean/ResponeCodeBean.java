@@ -1,6 +1,8 @@
 package com.musongzi.test.bean;
 
-public class ResponeCodeBean<T> {
+import com.musongzi.core.itf.data.ISimpleRespone;
+
+public class ResponeCodeBean<T> implements ISimpleRespone<T> {
 
     private int code;
 
@@ -8,10 +10,12 @@ public class ResponeCodeBean<T> {
 
     private T data;
 
+    @Override
     public T getData() {
         return data;
     }
 
+    @Override
     public void setData(T data) {
         this.data = data;
     }

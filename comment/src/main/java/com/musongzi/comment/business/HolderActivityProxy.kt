@@ -7,15 +7,13 @@ import androidx.lifecycle.*
 import com.musongzi.core.ExtensionCoreMethod.getSaveStateValue
 import com.musongzi.core.ExtensionCoreMethod.saveStateChange
 import com.musongzi.core.base.business.EmptyBusiness
-import com.musongzi.core.base.vm.DataDriveViewModel
+import androidx.lifecycle.DataDriveViewModel
 import com.musongzi.core.itf.ISaveStateHandle
 import com.musongzi.core.itf.holder.IHolderActivity
-import com.musongzi.core.itf.holder.IHolderArguments
 import com.musongzi.core.itf.holder.IHolderLifecycle
 import com.musongzi.core.util.InjectionHelp
 import com.trello.rxlifecycle4.LifecycleTransformer
 import java.lang.ref.WeakReference
-import java.nio.file.WatchEvent
 
 /*** created by linhui * on 2022/9/27 */
 class HolderActivityProxy(activity: IHolderActivity) : IHolderActivity {

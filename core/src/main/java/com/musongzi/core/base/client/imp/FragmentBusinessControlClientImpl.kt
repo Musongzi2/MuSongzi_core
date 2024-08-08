@@ -3,11 +3,10 @@ package com.musongzi.core.base.client.imp
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
 import com.musongzi.core.base.client.ClientImpl
-import com.musongzi.core.base.client.FragmentClient
-import com.musongzi.core.base.client.FragmentControlClient
+import com.musongzi.core.base.client.IFragmentClient
+import com.musongzi.core.base.client.IFragmentControlClient
 
-class FragmentBusinessControlClientImpl(f: FragmentClient) : ClientImpl<FragmentClient>(f),
-    FragmentControlClient {
+class FragmentBusinessControlClientImpl(f: IFragmentClient) : ClientImpl<IFragmentClient>(f), IFragmentControlClient {
 
 
     private var hideMethod: (FragmentTransaction, Fragment, Boolean) -> FragmentTransaction =

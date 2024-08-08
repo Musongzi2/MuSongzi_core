@@ -1,7 +1,6 @@
-package com.musongzi.core.base.vm
+package androidx.lifecycle
 
 import android.util.Log
-import androidx.lifecycle.ViewModel
 import com.musongzi.core.base.map.LocalSavedHandler
 import com.musongzi.core.itf.*
 import com.musongzi.core.itf.client.IContextClient
@@ -10,8 +9,6 @@ import com.musongzi.core.util.UiUtil
 import com.trello.rxlifecycle4.LifecycleProvider
 import com.trello.rxlifecycle4.LifecycleTransformer
 import com.trello.rxlifecycle4.RxLifecycle
-import com.trello.rxlifecycle4.android.FragmentEvent
-import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.subjects.BehaviorSubject
 import java.io.Closeable
 import java.lang.ref.WeakReference
@@ -63,15 +60,11 @@ abstract class CoreViewModel : ViewModel(), IAttach<IContextClient>, IWant, IWan
     }
 
     override fun addOnClose(close: Closeable) {
-        val method = ViewModel::class.java.getDeclaredMethod("setTagIfAbsent", String::class.java, Object::class.java)
-        method.isAccessible = true
-        method.invoke(this, close.hashCode().toString(), close)
+        setTagIfAbsent(close.hashCode().toString(), close)
+//        val method = ViewModel::class.java.getDeclaredMethod("setTagIfAbsent", String::class.java, Object::class.java)
+//        method.isAccessible = true
+//        method.invoke(this, close.hashCode().toString(), close)
     }
-
-//    override fun getHolderCoLifeCycle(): CoLifeCycle? {
-//        return this
-//    }
-
 
     /**
      * 有可能为空，如果是默认factory 注入的话

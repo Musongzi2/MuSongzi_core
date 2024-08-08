@@ -1,9 +1,8 @@
 package com.musongzi.core.base.client
 
 import androidx.fragment.app.Fragment
-import com.musongzi.core.itf.IClient
 
-interface FragmentControlClient : FragmentClient {
+interface IFragmentControlClient : IFragmentClient {
 
     fun addFragment(fragment: Fragment, tag: String? = null, isHide: Boolean = false)
     fun <F : Fragment> addFragment(fragmentClass: Class<F>, tag: String? = null, isHide: Boolean = false)

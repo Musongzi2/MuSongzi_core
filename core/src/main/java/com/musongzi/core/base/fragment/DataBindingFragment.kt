@@ -1,8 +1,5 @@
 package com.musongzi.core.base.fragment
 
-import android.app.Activity
-import android.app.Dialog
-import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -10,22 +7,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingComponent
 import androidx.databinding.ViewDataBinding
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentActivity
-import androidx.fragment.app.FragmentManager
-import androidx.lifecycle.*
-import androidx.savedstate.SavedStateRegistryOwner
-import com.musongzi.core.base.client.FragmentClient
-import com.musongzi.core.base.client.FragmentControlClient
-import com.musongzi.core.base.client.imp.FragmentBusinessControlClientImpl
-import com.musongzi.core.itf.IClient
 import com.musongzi.core.itf.IDisconnect
-import com.musongzi.core.itf.IWant
 import com.musongzi.core.itf.holder.*
 import com.musongzi.core.util.InjectionHelp
-import com.musongzi.core.view.TipDialog
-import com.trello.rxlifecycle4.components.support.RxFragment
-import java.lang.ref.WeakReference
 
 abstract class DataBindingFragment<D : ViewDataBinding> : BaseLayoutFragment(),
     IDisconnect, IHolderDataBinding<D> {

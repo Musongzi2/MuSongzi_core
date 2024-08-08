@@ -3,7 +3,6 @@ package com.musongzi.core.base.fragment
 import android.app.Activity
 import android.app.Dialog
 import android.content.Context
-import android.content.ContextWrapper
 import android.os.Bundle
 import android.util.Log
 import android.view.ContextThemeWrapper
@@ -21,7 +20,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.savedstate.SavedStateRegistryOwner
 import com.musongzi.core.ExtensionCoreMethod.layoutInflater
-import com.musongzi.core.base.client.FragmentControlClient
+import com.musongzi.core.base.client.IFragmentControlClient
 import com.musongzi.core.base.client.imp.FragmentBusinessControlClientImpl
 import com.musongzi.core.itf.holder.IHolderActivity
 import com.musongzi.core.itf.holder.IHolderLayoutInflater
@@ -35,9 +34,9 @@ import com.trello.rxlifecycle4.components.support.RxFragment
 /**
 create by linhui , data = 2023/7/1 0:03
  **/
-abstract class BaseLayoutFragment : RxFragment(), IHolderActivity, FragmentControlClient, IHolderUiTheme, IHolderLayoutInflater {
-    protected lateinit var fControl: FragmentControlClient
-    protected val TAG = javaClass.name
+abstract class BaseLayoutFragment : RxFragment(), IHolderActivity, IFragmentControlClient, IHolderUiTheme, IHolderLayoutInflater {
+    private lateinit var fControl: IFragmentControlClient
+    protected val TAG: String = javaClass.name
     private var tipDialog: Dialog? = null
 
     override var holderUiThemeRes: Int = 0
@@ -55,7 +54,7 @@ abstract class BaseLayoutFragment : RxFragment(), IHolderActivity, FragmentContr
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        fControl = FragmentBusinessControlClientImpl(this)
+
         return createView(getHolderLayoutInflater() ?: inflater, container, savedInstanceState)
     }
 
@@ -229,6 +228,7 @@ abstract class BaseLayoutFragment : RxFragment(), IHolderActivity, FragmentContr
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        fControl = FragmentBusinessControlClientImpl(this)
         Log.d(TAG, "FragmentState:onCreate")
     }
 

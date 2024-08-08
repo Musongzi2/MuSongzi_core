@@ -17,15 +17,18 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.gson.Gson
+import com.musongzi.core.ExtensionCoreMethod.sub
 import com.musongzi.core.base.adapter.TypeSupportAdaper
 import com.musongzi.core.base.business.HandlerChooseBusiness
 import com.musongzi.core.base.client.IRecycleViewClient
 import com.musongzi.core.base.manager.RetrofitManager
+import com.musongzi.core.base.page2.RequestObservableBean
 import com.musongzi.core.base.vm.IHandlerChooseViewModel
 import com.musongzi.core.itf.IBusiness
 import com.musongzi.core.itf.IHolderSavedStateHandle
 import com.musongzi.core.itf.ISaveStateHandle
 import com.musongzi.core.itf.IWant
+import com.musongzi.core.itf.data.ISimpleRespone
 import com.musongzi.core.itf.holder.IHolderNeed
 import com.musongzi.core.itf.holder.IHolderSavedStateHandler
 import com.musongzi.core.itf.holder.IHolderViewModelProvider
@@ -499,6 +502,13 @@ object ExtensionCoreMethod {
 //    }
     inline fun <reified T> IWant?.getApi(): T {
         return RetrofitManager.getInstance().getApi(T::class.java, this)
+    }
+
+
+    fun <R : ISimpleRespone<*>> Observable<R>.subAndSetData(saveStateHandle: ISaveStateHandle, key: String) {
+        sub {
+            key.saveStateChange(saveStateHandle, it.data)
+        }
     }
 
 
