@@ -6,6 +6,8 @@ import com.musongzi.core.ExtensionCoreMethod.getApi
 import com.musongzi.core.ExtensionCoreMethod.subAndSetData
 import com.musongzi.core.base.business.EmptyBusiness
 import androidx.lifecycle.DataDriveViewModel
+import com.musongzi.core.ExtensionCoreMethod.getApiAsData
+import com.musongzi.core.StringChooseBean
 import com.musongzi.test.MszTestApi
 
 /**
@@ -21,8 +23,19 @@ class ListDataViewModel(saved: SavedStateHandle? = null) : DataDriveViewModel<Em
     }
 
     fun loadDataUser() {
+
+//        java.util.concurrent.
         Log.d(TAG, "loadDataUser: reday load getArrayEngine()")
-        getApi<MszTestApi>().getArrayEngine(0, 3).subAndSetData(localSavedStateHandle,DATA)
+
+//        getApi<MszTestApi>().getArrayEngine(0, 3).subAndSetData(localSavedStateHandle, DATA)
+        Log.d(TAG, "loadDataUser: thread =  " + Thread.currentThread())
+        getApiAsData<MszTestApi, List<StringChooseBean>>(getHolderSavedStateHandle(), DATA) {
+            getArrayEngine(0, 3).map {
+//                Log.d(TAG, "loadDataUser: thread =  " + Thread.currentThread())
+                it.data ?: mutableListOf()
+            }
+        }
+
     }
 
 

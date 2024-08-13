@@ -90,69 +90,65 @@ public class RetrofitManager {
 
     @NotNull
     public <T> T getApi(Class<T> tClass) {
-        return getApi(tClass, tClass.getName() + "_main", null);
+        return getApi(tClass, tClass.getName());
     }
 
-    @NotNull
-    public <T> T getApi(Class<T> tClass, IWant want) {
-        if (want != null) {
-            String key = tClass.getName() + want.hashCode();
-            return getApi(tClass, key, want);
-        }
-        return getApi(tClass, tClass.getName(), null);
-    }
 
     @NotNull
-    public <T> T getApi(Class<T> tClass, String key, IWant want) {
+    public <T> T getApi(Class<T> tClass, String key) {
         Map<String, Object> apis = RetrofitManager.getInstance().apis;
         T t = (T) apis.get(key);
 
 
         if (t == null) {
-            if (want != null) {
-                final WeakReference<CallBack> c = new WeakReference<>(mCallBack);
-                final WeakReference<RetrofitManager> r = new WeakReference<>(MANAGER);
-                InvocationHandler invocationHandler = new InvocationHandler() {
-                    private final Object[] emptyArgs = new Object[0];
+//            if (want != null) {
+//            final WeakReference<CallBack> c = new WeakReference<>(mCallBack);
+//            final WeakReference<RetrofitManager> r = new WeakReference<>(MANAGER);
+            InvocationHandler invocationHandler = new InvocationHandler() {
+                private final Object[] emptyArgs = new Object[0];
 
-                    @Override
-                    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-                        if (method.getDeclaringClass() == Object.class) {
-                            return method.invoke(this, args);
-                        }
-                        args = args != null ? args : emptyArgs;
-                        Log.i(TAG, "invoke: 1");
-                        Object returnInstance = null;
-                        if (c.get() != null) {
-                            Log.i(TAG, "invoke: 2");
-                            returnInstance = c.get().invoke(proxy, method, args);
-                        }
-                        if (returnInstance == null) {
-                            Log.i(TAG, "invoke: 3");
-                            returnInstance = method.invoke(r.get().getApi(tClass), args);
-                        }
-                        Log.i(TAG, "invoke: 4");
-                        if (method.getReturnType().isAssignableFrom(Observable.class)) {
-                            Log.i(TAG, "invoke: 5");
-                            returnInstance = ((Observable<?>) returnInstance).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).compose(want.bindToLifecycle());
-                        }
-                        Log.i(TAG, "invoke: 6 " + returnInstance);
-                        return returnInstance;
+                @Override
+                public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+                    if (method.getDeclaringClass() == Object.class) {
+                        return method.invoke(this, args);
                     }
-                };
-
-                t = (T) Proxy.newProxyInstance(tClass.getClassLoader(), new Class<?>[]{tClass}, invocationHandler);
-
-                if (want instanceof IWant2) {
-                    ((IWant2) want).addOnClose(new Closeable() {
-                        @Override
-                        public void close() {
-                            Object flag = RetrofitManager.getInstance().apis.remove(key);
-//                            Log.d("Observable_Sub", "onDestroy: api " + flag + " , key = " + key);
-                            Log.d("loadData", "onClose: api = " + flag + " , key = " + key);
-                        }
-                    });
+                    args = args != null ? args : emptyArgs;
+                    Log.i(TAG, "invoke: 1");
+                    Object returnInstance = null;
+                    if (mCallBack != null) {
+                        Log.i(TAG, "invoke: 2");
+                        returnInstance = mCallBack.invoke(proxy, method, args);
+                    }
+                    if (returnInstance == null) {
+                        Log.i(TAG, "invoke: 3");
+                        returnInstance = method.invoke(MANAGER.getApi(tClass), args);
+                    }
+                    Log.i(TAG, "invoke: 4");
+                    if (method.getReturnType().isAssignableFrom(Observable.class)) {
+                        Log.i(TAG, "invoke: 5");
+//                        Observable<?> call =
+//                        if (want != null) {
+//                            call = call.compose(want.bindToLifecycle());
+//                        }
+                        returnInstance = ((Observable<?>) returnInstance).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());;
+                    }
+                    Log.i(TAG, "invoke: 6 " + returnInstance);
+                    return returnInstance;
                 }
+            };
+
+            t = (T) Proxy.newProxyInstance(tClass.getClassLoader(), new Class<?>[]{tClass}, invocationHandler);
+
+//            if (want instanceof IWant2) {
+//                ((IWant2) want).addOnClose(new Closeable() {
+//                    @Override
+//                    public void close() {
+//                        Object flag = RetrofitManager.getInstance().apis.remove(key);
+////                            Log.d("Observable_Sub", "onDestroy: api " + flag + " , key = " + key);
+//                        Log.d("loadData", "onClose: api = " + flag + " , key = " + key);
+//                    }
+//                });
+//            }
 //                want.getThisLifecycle().getLifecycle().addObserver(new DefaultLifecycleObserver() {
 //                    @Override
 //                    public void onDestroy(@NonNull LifecycleOwner owner) {
@@ -160,16 +156,28 @@ public class RetrofitManager {
 //                        Log.i("Observable_Sub", "onDestroy: api " + flag + " , key = " + key);
 //                    }
 //                });
-            } else {
-                t = RetrofitManager.getInstance().retrofit.create(tClass);
-            }
+//            } else {
+//                t = RetrofitManager.getInstance().retrofit.create(tClass);
+//            }
             apis.put(key, t);
+            apis.put(key + "_main", retrofit.create(tClass));
+
         }
 //        t = (T) apis.get(key);
         Log.i("Observable_Sub", "getApi: key = " + key);
         return t;
     }
 
+    @NonNull
+    public <T> T getSimpleApi(Class<T> tClass) {
+        String key = tClass.getName() + "_main";
+        Object t = apis.get(key);
+        if (t == null) {
+            t = retrofit.create(tClass);
+            apis.put(key, t);
+        }
+        return (T) t;
+    }
 
     public interface CallBack extends InvocationHandler {
         @Nullable

@@ -27,6 +27,7 @@ import com.musongzi.core.base.page2.SimplePageCall
 import com.musongzi.core.itf.page.IPageEngine
 import com.musongzi.test.MszTestApi
 import com.musongzi.test.api.SimpleApi
+import com.musongzi.test.bean.ResponeCodeBean
 import com.musongzi.test.databinding.FragmentRecyclePageBinding
 import com.musongzi.test.databinding.ItemUserInfoBinding
 import com.musongzi.test.vm.ListDataViewModel
@@ -97,7 +98,7 @@ class RecyclePageFragment : DataBindingFragment<FragmentRecyclePageBinding>() {
                 override fun getRemoteData(page: Int, pageSize: Int): Observable<List<StringChooseBean>>? {
                     Log.i(TAG, "getRemoteData: page = $page , pageSize = $pageSize")
                     return getApi<MszTestApi>().getArrayEngine(page, pageSize).map {
-                        it.data
+                        it.data ?: mutableListOf()
                     }
 //                    return Observable.create {
 //                        val dataBean = ListDataBean<UserInfo>()
@@ -212,7 +213,7 @@ class RecyclePageFragment : DataBindingFragment<FragmentRecyclePageBinding>() {
 
         viewModel.loadDataUser()
 
-        "data".liveSaveStateObserver<List<StringChooseBean>>(this,viewModel.localSavedStateHandle){
+        ListDataViewModel.DATA.liveSaveStateObserver<List<StringChooseBean>?>(this, viewModel) {
             Log.i(TAG, "initData: ${if (it?.isEmpty() == true) null else Arrays.toString(it?.toTypedArray())}")
         }
 

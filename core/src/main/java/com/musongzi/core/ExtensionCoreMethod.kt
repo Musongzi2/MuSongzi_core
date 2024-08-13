@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.app.ActivityCompat
+import androidx.databinding.DataBinderMapper
 import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LifecycleOwner
@@ -18,6 +19,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.gson.Gson
 import com.musongzi.core.ExtensionCoreMethod.sub
+import com.musongzi.core.ExtensionCoreMethod.subAndSetData
 import com.musongzi.core.base.adapter.TypeSupportAdaper
 import com.musongzi.core.base.business.HandlerChooseBusiness
 import com.musongzi.core.base.client.IRecycleViewClient
@@ -500,14 +502,31 @@ object ExtensionCoreMethod {
 //        }
 //        return RetrofitManager.getInstance().getApi(this, want)
 //    }
-    inline fun <reified T> IWant?.getApi(): T {
-        return RetrofitManager.getInstance().getApi(T::class.java, this)
+    inline fun <reified T> getApi(): T {
+        return RetrofitManager.getInstance().getApi(T::class.java)
+    }
+
+    inline fun <reified T> IWant.getApi(
+        saveStateHandle: ISaveStateHandle,
+        key: String,
+        call: T.() -> Observable<*>
+    ) {
+        call(RetrofitManager.getInstance().getApi(T::class.java)).compose(bindToLifecycle()!!).subAndSetData(saveStateHandle, key)
+    }
+
+    inline fun <reified T, D : Any> IWant.getApiAsData(
+        saveStateHandle: ISaveStateHandle,
+        key: String,
+        call: T.() -> Observable<D>
+    ) {
+        call(RetrofitManager.getInstance().getApi(T::class.java)).compose(bindToLifecycle()!!).subAndSetData(saveStateHandle, key)
     }
 
 
-    fun <R : ISimpleRespone<*>> Observable<R>.subAndSetData(saveStateHandle: ISaveStateHandle, key: String) {
+    fun <R : Any> Observable<R>.subAndSetData(saveStateHandle: ISaveStateHandle, key: String) {
         sub {
-            key.saveStateChange(saveStateHandle, it.data)
+            Log.d("subAndSetData", "initData subAndSetData :$it")
+            key.saveStateChange(saveStateHandle, it)
         }
     }
 

@@ -66,18 +66,18 @@ class MyApplication : MszApplicaton() {
                 override fun invoke(proxy: Any?, method: Method, args: Array<out Any>): Any? {
                     when (method.name) {
                         "grilPic" -> {
-                            return RetrofitManager.getInstance().getApi(MszTestApi::class.java).grilPic()
+                            return RetrofitManager.getInstance().getSimpleApi(MszTestApi::class.java).grilPic()
                                 .delay(5, TimeUnit.SECONDS).doOnDispose {
-                                    Log.i(TAG, "grilPic: 取消")
+                                    Log.d(TAG, "grilPic: 取消")
                                 }
                         }
 
-//                        "getArrayEngine" -> {
-//                            return RetrofitManager.getInstance().getApi(MszTestApi::class.java).getArrayEngine(args[0] as Int, args[1] as Int, args[2] as? String)
-//                                .delay(5, TimeUnit.SECONDS).doOnDispose {
-//                                    Log.i(TAG, "getArrayEngine: 取消")
-//                                }
-//                        }
+                        "getArrayEngine" -> {
+                            return RetrofitManager.getInstance().getSimpleApi(MszTestApi::class.java).getArrayEngine(args[0] as Int, args[1] as Int, args[2] as? String)
+                                .delay(5, TimeUnit.SECONDS).doOnDispose {
+                                    Log.d(TAG, "getArrayEngine: 取消 , initData")
+                                }
+                        }
                     }
                     return null;
                 }
