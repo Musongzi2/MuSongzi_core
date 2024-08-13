@@ -506,6 +506,12 @@ object ExtensionCoreMethod {
         return RetrofitManager.getInstance().getApi(T::class.java)
     }
 
+    inline fun <reified T, D : Any> IWant.getApi(
+        call: T.() -> Observable<D>
+    ): Observable<D> {
+        return call(RetrofitManager.getInstance().getApi(T::class.java)).compose(bindToLifecycle()!!)
+    }
+
     inline fun <reified T> IWant.getApi(
         saveStateHandle: ISaveStateHandle,
         key: String,
@@ -525,7 +531,6 @@ object ExtensionCoreMethod {
 
     fun <R : Any> Observable<R>.subAndSetData(saveStateHandle: ISaveStateHandle, key: String) {
         sub {
-            Log.d("subAndSetData", "initData subAndSetData :$it")
             key.saveStateChange(saveStateHandle, it)
         }
     }

@@ -25,6 +25,7 @@ import com.musongzi.core.base.page2.PageLoader
 import com.musongzi.core.base.page2.RequestObservableBean
 import com.musongzi.core.base.page2.SimplePageCall
 import com.musongzi.core.itf.page.IPageEngine
+import com.musongzi.core.itf.page.IPageEngine2
 import com.musongzi.test.MszTestApi
 import com.musongzi.test.api.SimpleApi
 import com.musongzi.test.bean.ResponeCodeBean
@@ -97,41 +98,19 @@ class RecyclePageFragment : DataBindingFragment<FragmentRecyclePageBinding>() {
                 SimplePageCall<StringChooseBean>(this@RecyclePageFragment) {
                 override fun getRemoteData(page: Int, pageSize: Int): Observable<List<StringChooseBean>>? {
                     Log.i(TAG, "getRemoteData: page = $page , pageSize = $pageSize")
-                    return getApi<MszTestApi>().getArrayEngine(page, pageSize).map {
-                        it.data ?: mutableListOf()
-                    }
-//                    return Observable.create {
-//                        val dataBean = ListDataBean<UserInfo>()
-//                        it.onNext(dataBean.data.apply {
-//
-//
-//                            if(page == 0) {
-//                                add(UserInfo(System.currentTimeMillis(), "小米"))
-//                                add(UserInfo(System.currentTimeMillis(), "小明"))
-//                                add(UserInfo(System.currentTimeMillis(), "小白"))
-//                                add(UserInfo(System.currentTimeMillis(), "小红", gender = IUserInfo.WOMAN))
-//                                add(UserInfo(System.currentTimeMillis(), "小寻", gender = IUserInfo.WOMAN))
-//                                add(UserInfo(System.currentTimeMillis(), "小志"))
-//                                add(UserInfo(System.currentTimeMillis(), "小薰", gender = IUserInfo.WOMAN))
-//                                add(UserInfo(System.currentTimeMillis(), "小强"))
-//                                add(UserInfo(System.currentTimeMillis(), "小赞"))
-//                                add(UserInfo(System.currentTimeMillis(), "小芸", gender = IUserInfo.WOMAN))
-//                            }else if(page == 1) {
-//                                add(UserInfo(System.currentTimeMillis(), "小欧"))
-//                                add(UserInfo(System.currentTimeMillis(), "小林"))
-//                                add(UserInfo(System.currentTimeMillis(), "小晨", gender = IUserInfo.WOMAN))
-//                                add(UserInfo(System.currentTimeMillis(), "小婷", gender = IUserInfo.WOMAN))
-//                                add(UserInfo(System.currentTimeMillis(), "小琪", gender = IUserInfo.WOMAN))
-//                                add(UserInfo(System.currentTimeMillis(), "小国"))
-//                                add(UserInfo(System.currentTimeMillis(), "小海"))
-//                                add(UserInfo(System.currentTimeMillis(), "小痞"))
-//                            }
-//                        })
-//                        it.onComplete()
+//                    return getApi<MszTestApi>().getArrayEngine(page, pageSize).map {
+//                        it.data ?: mutableListOf()
 //                    }
+
+                    return getApi<MszTestApi,List<StringChooseBean>> {
+                        getArrayEngine(page,pageSize).map {
+                            Log.i(TAG, "loadData getRemoteData: $it")
+                            it.data ?: mutableListOf()
+                        }
+                    }
                 }
 
-                override fun pageSize(): Int = 10
+                override fun pageSize(): Int = IPageEngine.PAGE_SIZE / 5
 
                 override fun handlerState(state: Int?) {
                     super.handlerState(state)

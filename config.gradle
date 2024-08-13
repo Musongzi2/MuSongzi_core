@@ -3,12 +3,12 @@ ext {
             compileSdkVersion: 31,
             targetSdkVersion : 30,
             minSdkVersion    : 23,
-            versionCode      : 20220716,
-            versionName      : '1.0.0',
+            versionCode      : 20240813,
+            versionName      : '2.0.0',
     ]
 
     lib = [
-            appcompatx       : '1.3.1',
+            appcompatx       : '1.4.1',
             recyclerviewx    : '1.2.1',
             glide             : '4.11.0',
             lifecycle_livedata: '2.1.0',

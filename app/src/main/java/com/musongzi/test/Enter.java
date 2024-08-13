@@ -72,7 +72,8 @@ public class Enter {
     //0000_0000 0000_0000 1111_1111 0000_0000
     static int LOW_3_3_MARK = LOW_3_MARK << bThr;
 
-    public static void jiami(InputStream inputStream, OutputStream outputStream,boolean isDecord) throws Exception {
+    public static void jiami(InputStream inputStream, OutputStream outputStream, boolean isDecord) throws Exception {
+
 
 
         int read;
