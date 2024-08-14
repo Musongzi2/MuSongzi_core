@@ -512,6 +512,9 @@ object ExtensionCoreMethod {
         return call(RetrofitManager.getInstance().getApi(T::class.java)).compose(bindToLifecycle()!!)
     }
 
+    fun printThread(tag:String = "ThreadNmae"){
+        Log.d(tag, "printThread: ${Thread.currentThread()}")
+    }
     inline fun <reified T> IWant.getApi(
         saveStateHandle: ISaveStateHandle,
         key: String,

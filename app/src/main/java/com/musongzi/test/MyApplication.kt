@@ -72,12 +72,12 @@ class MyApplication : MszApplicaton() {
                                 }
                         }
 
-                        "getArrayEngine" -> {
-                            return RetrofitManager.getInstance().getSimpleApi(MszTestApi::class.java).getArrayEngine(args[0] as Int, args[1] as Int, args[2] as? String)
-                                .delay(5, TimeUnit.SECONDS).doOnDispose {
-                                    Log.d(TAG, "getArrayEngine: 取消 , initData")
-                                }
-                        }
+//                        "getArrayEngine" -> {
+//                            return RetrofitManager.getInstance().getSimpleApi(MszTestApi::class.java).getArrayEngine(args[0] as Int, args[1] as Int, args[2] as? String)
+//                                .delay(5, TimeUnit.SECONDS).doOnDispose {
+//                                    Log.d(TAG, "getArrayEngine: 取消 , initData")
+//                                }
+//                        }
                     }
                     return null;
                 }

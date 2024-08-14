@@ -121,7 +121,7 @@ public class RetrofitManager {
                     }
                     if (returnInstance == null) {
                         Log.i(TAG, "invoke: 3");
-                        returnInstance = method.invoke(MANAGER.getApi(tClass), args);
+                        returnInstance = method.invoke(getSimpleApi(tClass), args);
                     }
                     Log.i(TAG, "invoke: 4");
                     if (method.getReturnType().isAssignableFrom(Observable.class)) {

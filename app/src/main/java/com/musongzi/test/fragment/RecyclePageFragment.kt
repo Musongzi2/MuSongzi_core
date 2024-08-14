@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewModelScope
+import androidx.recyclerview.widget.DiffUtil
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.Player
@@ -16,10 +17,13 @@ import com.musongzi.core.ExtensionCoreMethod.adapter
 import com.musongzi.core.ExtensionCoreMethod.getApi
 import com.musongzi.core.ExtensionCoreMethod.linearLayoutManager
 import com.musongzi.core.ExtensionCoreMethod.liveSaveStateObserver
+import com.musongzi.core.ExtensionCoreMethod.printThread
 import com.musongzi.core.ExtensionCoreMethod.refreshLayoutInit
 import com.musongzi.core.ExtensionCoreMethod.saveStateChange
+import com.musongzi.core.ExtensionCoreMethod.sub
 import com.musongzi.core.StringChooseBean
 import com.musongzi.core.base.fragment.DataBindingFragment
+import com.musongzi.core.base.fragment.ViewModelFragment.Companion.composeProvider
 import com.musongzi.core.base.manager.RetrofitManager
 import com.musongzi.core.base.page2.PageLoader
 import com.musongzi.core.base.page2.RequestObservableBean
@@ -32,13 +36,20 @@ import com.musongzi.test.bean.ResponeCodeBean
 import com.musongzi.test.databinding.FragmentRecyclePageBinding
 import com.musongzi.test.databinding.ItemUserInfoBinding
 import com.musongzi.test.vm.ListDataViewModel
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.schedulers.Schedulers
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.channels.broadcast
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.jetbrains.annotations.Async.Schedule
 import java.lang.Thread.sleep
 import java.util.Arrays
+import kotlin.coroutines.CoroutineContext
+import kotlin.random.Random
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -54,6 +65,21 @@ class RecyclePageFragment : DataBindingFragment<FragmentRecyclePageBinding>() {
 
     private var pageLoad: IPageEngine<StringChooseBean>? = null
     val viewModel: ListDataViewModel by viewModels()
+
+    private val mDiffUtilCallBacl = object : DiffUtil.Callback() {
+        override fun getOldListSize() = pageLoad?.realData()?.size ?: 0
+
+        override fun getNewListSize() = pageLoad?.realData()?.size ?: 0
+
+        override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+            return pageLoad?.realData()?.get(oldItemPosition)?.title == pageLoad?.realData()?.get(newItemPosition)?.title
+        }
+
+        override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+            return pageLoad?.realData()?.get(oldItemPosition)?.title == pageLoad?.realData()?.get(newItemPosition)?.title
+        }
+
+    }
 
     override fun notifyDataSetChangedItem(postiont: Int) {
         dataBinding.idRecyclerView.adapter?.notifyItemChanged(postiont)
@@ -77,16 +103,37 @@ class RecyclePageFragment : DataBindingFragment<FragmentRecyclePageBinding>() {
 
         if (dataBinding.idRecyclerView.adapter == null) {
             dataBinding.idRecyclerView.linearLayoutManager {
+                it.initialPrefetchItemCount
                 safeGetPageEngine().adapter(ItemUserInfoBinding::class.java) { d, i, p ->
+
                     d.idTitleTv.setOnClickListener {
                         if (safePlayer().isPlaying) {
                             safePlayer().pause()
                         } else {
                             safePlayer().play()
                         }
-//                        notifyDataSetChanged()
+                        safeGetPageEngine().realData()[p].title = (Math.random() * 400 + 150).toInt().toString()
+                        notifyDataSetChangedItem(p)
+//                        Observable.create { emittrt ->
+//                            emittrt.onNext(DiffUtil.calculateDiff(mDiffUtilCallBacl))
+//                            emittrt.onComplete()
+//                        }.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).compose(this@RecyclePageFragment.bindToLifecycle()).sub{re->
+//                            re.dispatchUpdatesTo(dataBinding.idRecyclerView.adapter!!)
+//                        }
 
+//                        observable.
+//                        DiffUtil.calculateDiff(mDiffUtilCallBacl).dispatchUpdatesTo(dataBinding.idRecyclerView.adapter!!)
+//                        lifecycleScope.async(Dispatchers.IO){
+//                            printThread("haha")
+//                            val re = DiffUtil.calculateDiff(mDiffUtilCallBacl)
+//                            withContext(lifecycleScope.coroutineContext){
+//                                printThread("haha")
+//                                re.dispatchUpdatesTo(dataBinding.idRecyclerView.adapter!!)
+//                            }
+//                        }
                     }
+
+
                 }
             }
         }
@@ -102,15 +149,15 @@ class RecyclePageFragment : DataBindingFragment<FragmentRecyclePageBinding>() {
 //                        it.data ?: mutableListOf()
 //                    }
 
-                    return getApi<MszTestApi,List<StringChooseBean>> {
-                        getArrayEngine(page,pageSize).map {
+                    return getApi<MszTestApi, List<StringChooseBean>> {
+                        getArrayEngine(page, pageSize).map {
                             Log.i(TAG, "loadData getRemoteData: $it")
                             it.data ?: mutableListOf()
                         }
                     }
                 }
 
-                override fun pageSize(): Int = IPageEngine.PAGE_SIZE / 5
+                override fun pageSize(): Int = IPageEngine.PAGE_SIZE
 
                 override fun handlerState(state: Int?) {
                     super.handlerState(state)
