@@ -43,6 +43,7 @@ import io.reactivex.rxjava3.disposables.Disposable;
  * @param <ListItem>
  * @param <DataEntity>
  */
+@Deprecated
 public class PageLoader<ListItem, DataEntity> implements ICataloguePage2<ListItem, DataEntity>,
         ILimitRead, ILimitOnLoaderState, IHolderCheckDataEnd, IHolderOnDataChangeListener2<ListItem, RequestObservableBean<DataEntity>>,
         IState2, IHolderOnDataChangeListener<ListItem> {
@@ -390,7 +391,7 @@ public class PageLoader<ListItem, DataEntity> implements ICataloguePage2<ListIte
             //保存此次请求的page
             bean.setPage(p);
             //保存此次pagesize
-            bean.setPageSize(pageSize());
+            bean.setPageSize(dataSize);
             /**
              * [RemoteObserver] 来订阅
              */
