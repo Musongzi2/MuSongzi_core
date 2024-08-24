@@ -395,7 +395,7 @@ public class PageLoader<ListItem, DataEntity> implements ICataloguePage2<ListIte
             //保存此次请求的page
             bean.setPage(p);
             //保存此次pagesize
-            bean.setPageSize(pageSize());
+            bean.setPageSize(dataSize);
             /**
              * [RemoteObserver] 来订阅
              */
