@@ -35,6 +35,7 @@ import com.musongzi.core.itf.holder.IHolderNeed
 import com.musongzi.core.itf.holder.IHolderSavedStateHandler
 import com.musongzi.core.itf.holder.IHolderViewModelProvider
 import com.musongzi.core.itf.page.IPageEngine
+import com.musongzi.core.itf.page.IRead
 import com.musongzi.core.itf.page.ISource
 import com.musongzi.core.util.ActivityThreadHelp
 import com.musongzi.core.util.TextUtil
@@ -231,7 +232,7 @@ object ExtensionCoreMethod {
 
     @JvmStatic
     fun SmartRefreshLayout?.refreshLayoutInit(
-        p: IPageEngine<*>? = null,
+        p: IRead? = null,
         isEnableRefresh: Boolean = true,
         isEnableLoadMore: Boolean = true,
         time: Int = 500,
