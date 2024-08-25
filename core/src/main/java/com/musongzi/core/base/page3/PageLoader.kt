@@ -25,6 +25,7 @@ class PageLoader<T> private constructor(private var page: Int = START_PAGE, priv
     private var lifecycleOwner: LifecycleOwner? = null
     private var isEnd = false
     private var checkData: ICheckDataEnd? = null
+    private var end: (() -> Unit)? = null
     private val datas by lazy {
         mutableListOf<T>()
     }
@@ -58,6 +59,26 @@ class PageLoader<T> private constructor(private var page: Int = START_PAGE, priv
         private var onRefresh: ((Int, Int) -> Unit)? = null
         private var onNext: ((Int, Int) -> Unit)? = null
         private var setDataTransformations: ((MutableList<T>, List<T>) -> Unit)? = null
+        private var end: (() -> Unit)? = null
+        fun lifecycleOwner(p: LifecycleOwner): Build<T> {
+            lifecycleOwner = p
+            return this
+        }
+
+        fun page(p: Int): Build<T> {
+            page = p
+            return this
+        }
+
+        fun pageSize(p: Int): Build<T> {
+            pageSize = p
+            return this
+        }
+
+        fun onMoreNext(end: () -> Unit): Build<T> {
+            this.end = end
+            return this
+        }
 
         fun dataTransformations(d: (MutableList<T>, List<T>) -> Unit): Build<T> {
             setDataTransformations = d
@@ -92,6 +113,7 @@ class PageLoader<T> private constructor(private var page: Int = START_PAGE, priv
                 }
                 this.lifecycleOwner = this@Build.lifecycleOwner
                 this.setDataTransformations = this@Build.setDataTransformations
+                this.end = this@Build.end
             }
         }
 
@@ -122,14 +144,17 @@ class PageLoader<T> private constructor(private var page: Int = START_PAGE, priv
             lifecycleOwner!!.lifecycleScope
         }
         scope.launch(Dispatchers.IO) {
-            call(page, pageSize).collect {
+            call(page, pageSize).collect {newList->
                 withContext(Dispatchers.Main) {
                     if (setDataTransformations == null) {
-                        datas.addAll(it)
+                        if (thisStartPage() == page) {
+                            datas.clear()
+                        }
+                        datas.addAll(newList)
                     } else {
-                        setDataTransformations?.invoke(datas, it)
+                        setDataTransformations?.invoke(datas, newList)
                     }
-                    isEnd = checkData?.checkDataIsNull(datas) ?: false
+                    isEnd = checkData?.checkDataIsNull(datas) ?: newList.isEmpty()
                     dispatchOnDataChange(datas)
                 }
             }
@@ -212,6 +237,7 @@ class PageLoader<T> private constructor(private var page: Int = START_PAGE, priv
 
     override fun next() {
         if (isEnd()) {
+            end?.invoke()
             return
         }
         page++

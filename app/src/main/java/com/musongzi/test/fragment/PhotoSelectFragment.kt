@@ -31,16 +31,28 @@ create by linhui , data = 2024/8/24 15:00
  **/
 class PhotoSelectFragment : BaseLayoutFragment() {
 
+    private val smartRefreshLayout by lazy {
+        view?.findViewById<SmartRefreshLayout>(R.id.id_SmartRefreshLayout)?.apply {
+            setNoMoreData(false)
+        }
+    }
+
+    private val recyclerView by lazy {
+        view?.findViewById<RecyclerView>(R.id.id_recyclerView)
+    }
+
     private val read by lazy {
         PageLoader.Build { p, s ->
             loadRemoteData(p, s)
         }.dataChange {
             Log.i(TAG, "dataChange: it.size = ${it.size}")
-            view?.findViewById<RecyclerView>(R.id.id_recyclerView)?.apply {
-                adapter?.notifyDataSetChanged()
-
-            }
-        }.build()
+            recyclerView?.adapter?.notifyDataSetChanged()
+        }.pageSize(60).onMoreNext {
+            smartRefreshLayout?.setNoMoreData(true)
+            smartRefreshLayout?.setEnableFooterFollowWhenNoMoreData(true)
+        }.onRefresh { page, size ->
+            smartRefreshLayout?.setNoMoreData(false)
+        }.lifecycleOwner(this@PhotoSelectFragment).build()
     }
 
     override fun getLayoutId() = R.layout.fragment_select_photo
@@ -75,7 +87,7 @@ class PhotoSelectFragment : BaseLayoutFragment() {
 
         while (cursor?.moveToNext() == true) {
             val p = cursor.getColumnIndex(MediaStore.Images.Media.DATA)
-            if (p > 0) {
+            if (p >= 0) {
                 val data = cursor.getString(p)
                 mutableList.add(data)
             }
@@ -163,17 +175,18 @@ class PhotoSelectFragment : BaseLayoutFragment() {
 //            withContext(lifecycleScope.coroutineContext) {
 
 
-        view?.findViewById<SmartRefreshLayout>(R.id.id_SmartRefreshLayout)?.apply {
+        smartRefreshLayout?.apply {
 
             refreshLayoutInit(read)
 
         }
 
 
-        view?.findViewById<RecyclerView>(R.id.id_recyclerView)?.apply {
-
-            val width = (ScreenUtil.getScreenWidth() - 2 * 4 * 5) / 3
-            gridLayoutManager(3) {
+        recyclerView?.apply {
+            val _5 = 5.dp().toInt()
+            val span = 3
+            val width = (ScreenUtil.getScreenWidth() - 2 * 3 * _5) / span
+            gridLayoutManager(span) {
                 (read as ISource<String>).adapter(ItemPhotoBinding::class.java, { d, i ->
                     d.idImage.layoutParams.width = width
                     d.idImage.layoutParams.height = width
@@ -183,7 +196,7 @@ class PhotoSelectFragment : BaseLayoutFragment() {
             }
 
 
-            val _5 = 5.dp().toInt()
+
             addItemDecoration(object : RecyclerView.ItemDecoration() {
                 override fun getItemOffsets(outRect: Rect, view: View, parent: RecyclerView, state: RecyclerView.State) {
                     outRect.set(_5, _5, _5, _5)
