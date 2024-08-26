@@ -96,7 +96,7 @@ public class PageLoader<ListItem, DataEntity> implements ICataloguePage2<ListIte
     private int lastSize = 0;
     private int maxPage = -1;
     private boolean isEndPage = false;
-    private ICheckDataEnd checkEndDatasFunction;
+    private ICheckDataEnd checkEndDatasFunction = null;
     /**
      * 状态
      */
@@ -370,7 +370,11 @@ public class PageLoader<ListItem, DataEntity> implements ICataloguePage2<ListIte
          */
         if (checkEndDatasFunction == null) {
             //回调函数来处理页码的逻辑，这里接口有默认实现
-            p = pageCallBack.convertPage(page, dataSize, thisStartPage(), pageSize());
+            if (dataSize % pageSize() != 0) {
+                checkEndDatasFunction = array -> array == null || array.size() == 0;
+            } else {
+                p = pageCallBack.convertPage(page, dataSize, thisStartPage(), pageSize());
+            }
         }
         UiUtilKt.getHANDLER_UI().post(() -> {
             if (page == thisStartPage()) {

@@ -96,12 +96,15 @@ interface PageCallBack<I, D> : IDataObservable2<D> {
      * @param startPage 首页的index
      * @param pageSize 一页的最大数
      *
+     * 注意如果返回的数据中是混乱并且不是pagesize的页数范围，这判断会失效
+     *
      * @return 返回的是当前的需要加载页数index
      */
     fun convertPage(readyLoadPage: Int, dataSize: Int, startPage: Int, pageSize: Int): Int {
         if (readyLoadPage == startPage || dataSize == 0) {
             return startPage
         }
-        return dataSize / pageSize + startPage
+        val end = dataSize / pageSize + startPage
+        return end
     }
 }

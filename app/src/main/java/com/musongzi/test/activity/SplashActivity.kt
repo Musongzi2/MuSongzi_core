@@ -11,6 +11,7 @@ import com.mszsupport.test.TestImplFragment
 import com.musongzi.comment.ExtensionMethod.startActivityNormal
 import com.musongzi.test.R
 import com.musongzi.test.databinding.ActivityMainBinding
+import com.musongzi.test.fragment.PhotoSelectFragment
 import com.musongzi.test.fragment.RecyclePageFragment
 import kotlinx.coroutines.*
 
@@ -106,7 +107,7 @@ class SplashActivity : BaseActivity() {
 
 //        TestImplFragment::class.java.startActivityNormal("滑动测试")
 
-        RecyclePageFragment::class.java.startActivityNormal(
+        PhotoSelectFragment::class.java.startActivityNormal(
             "数据测试",
             dataBundleMethod = { bundle ->
                 bundle.putString("hahakey", "你好第二个页面")
