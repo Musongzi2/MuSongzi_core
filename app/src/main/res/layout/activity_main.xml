@@ -19,5 +19,14 @@
             android:text="哈哈哈"
             android:onClick="goTow"/>
 
+
+        <ImageView
+            android:id="@+id/id_image"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="10dp"
+            android:src="@drawable/arrow_anim_list"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
     </RelativeLayout>
 </layout>
