@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<animation-list xmlns:android="http://schemas.android.com/apk/res/android"
+    android:oneshot="false">
+
+    <item
+        android:drawable="@drawable/arrow_up"
+        android:duration="100" />
+    <item
+        android:drawable="@drawable/arrow_top_right"
+        android:duration="100" />
+    <item
+        android:drawable="@drawable/arrow_right"
+        android:duration="100" />
+    <item
+        android:drawable="@drawable/arrow_bottom_right"
+        android:duration="100" />
+    <item
+        android:drawable="@drawable/arrow_down"
+        android:duration="100" />
+    <item
+        android:drawable="@drawable/arrow_bottom_left"
+        android:duration="100" />
+    <item
+        android:drawable="@drawable/arrow_left"
+        android:duration="100" />
+    <item
+        android:drawable="@drawable/arrow_top_left"
+        android:duration="100" />
+
+</animation-list>

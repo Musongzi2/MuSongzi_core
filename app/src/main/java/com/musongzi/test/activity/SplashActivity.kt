@@ -1,19 +1,17 @@
 package com.musongzi.test.activity
 
 import android.Manifest
+import android.graphics.Canvas
+import android.graphics.ColorFilter
+import android.graphics.drawable.AnimationDrawable
+import android.graphics.drawable.DrawableContainer
 import android.os.Bundle
-import android.util.Log
+import android.view.Choreographer
 import android.view.View
 import androidx.core.app.ActivityCompat
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.lifecycleScope
-import com.mszsupport.test.TestImplFragment
-import com.musongzi.comment.ExtensionMethod.startActivityNormal
 import com.musongzi.test.R
 import com.musongzi.test.databinding.ActivityMainBinding
-import com.musongzi.test.fragment.PhotoSelectFragment
-import com.musongzi.test.fragment.RecyclePageFragment
-import kotlinx.coroutines.*
 
 class SplashActivity : BaseActivity() {
 
@@ -74,21 +72,53 @@ class SplashActivity : BaseActivity() {
 
 //        }
 
+//        val c = object : Choreographer.FrameCallback {
+//            override fun doFrame(frameTimeNanos: Long) {
+//                System.out.println("fram : it = $frameTimeNanos")
+//                Choreographer.getInstance().postFrameCallback(this)
+//            }
+//
+//
+//        }
+//
+//        Choreographer.getInstance().postFrameCallback(c)
 
     }
 
-    suspend fun three(): Int {
-        delay(2000)
-        return 3;
+
+    override fun onResume() {
+        super.onResume()
+        var tag = d.idImage.tag
+
+        if (tag == null) {
+            d.idImage.tag = d.idImage.drawable
+
+        }
+
+
+
+        (d.idImage.drawable as? AnimationDrawable)?.start()
     }
 
-    suspend fun two(): Int {
-        delay(3000)
-        return 2
+    override fun onPause() {
+        super.onPause()
+        (d.idImage.drawable as? AnimationDrawable)?.stop()
     }
-
 
     fun goTow(v: View) {
+
+        (d.idImage.drawable as? AnimationDrawable)?.apply {
+
+
+            if (isRunning) {
+                stop()
+            } else {
+                start()
+            }
+
+        }
+
+
 //        PictureSelector.create(this)
 //            .openGallery(SelectMimeType.ofImage())
 //            .setImageEngine(GlideEngine.createGlideEngine())
@@ -107,11 +137,11 @@ class SplashActivity : BaseActivity() {
 
 //        TestImplFragment::class.java.startActivityNormal("滑动测试")
 
-        PhotoSelectFragment::class.java.startActivityNormal(
-            "数据测试",
-            dataBundleMethod = { bundle ->
-                bundle.putString("hahakey", "你好第二个页面")
-            })
+//        PhotoSelectFragment::class.java.startActivityNormal(
+//            "数据测试",
+//            dataBundleMethod = { bundle ->
+//                bundle.putString("hahakey", "你好第二个页面")
+//            })
 
 //        BannerAndRetrofitMainFragment::class.java.startActivityNormal("Banner请求")
 
